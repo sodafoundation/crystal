@@ -1,5 +1,5 @@
-# crystal
-crystal provides unified metadata management platform for cloud and more.
+# SODA Crystal
+SODA Crystal provides unified metadata management platform for cloud and more.
 
 # Strategy and origin
 As a part of [SODA Strato](https://github.com/sodafoundation/strato) project, there are modules for S3 metadata management developed. 
