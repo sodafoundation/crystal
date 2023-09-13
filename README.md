@@ -1,17 +1,19 @@
 # SODA Crystal
-SODA Crystal provides unified metadata management platform for cloud and more.
+SODA Crystal provides unified metadata management platform for unstructured data for cloud and more.
 
 # Strategy and origin
-As a part of [SODA Strato](https://github.com/sodafoundation/strato) project, there are modules for S3 metadata management developed. 
-However, metadata management can be a horizontal component across other projects or modules of SODA ODF(Open Data Framework). The same 
-can be deployed for other data management platforms as well. Hence, when crystal project is considered, we thought of bringing the 
-metadata management modules for s3 from SODA Strato project to this crystal project. 
+Considering the state of unstructured data explosion, an efficient data management needs a strong backbone of metadata management. 
+Hence we started thinking to build a dedicated solution for unified metadata management platform, especially for unstructured data.
 
-Based on our analysis (in progress), there are different open source project focussing on metadata management. So the key strategy is to 
-further investigate, derive or onboard suitable modules or projects to crystal solution. 
+There are s3 metadata management modules developed as a part of [SODA Strato](https://github.com/sodafoundation/strato) project.  
+Metadata management is more of a horizontal component across other projects or modules of SODA ODF(Open Data Framework) and any 
+other data management platforms. Hence, when crystal project is planned, we thought of bringing the metadata management modules 
+for s3 from SODA Strato project to this crystal project. 
+Based on our analysis (in progress), there are different open source projects are focussing on metadata management. So the key 
+strategy is to further investigate, derive or onboard suitable modules or projects to crystal solution along with unique features 
+development within the project
 
-So, develop the delta components in this project and integrate other open solutions to build the complete crystal platform of 
-unified metadata management
+So, the strategy is to develop the unique components (or delta with exisitng projects) in this project and integrate other open solutions to build the complete crystal platform of unified metadata management for unstructured data.
 
 # Architecture and Modules
 - Collector
