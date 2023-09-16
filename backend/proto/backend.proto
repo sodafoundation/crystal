@@ -1,0 +1,156 @@
+syntax = "proto3";
+
+option go_package = "backend/proto";
+
+service Backend {
+	rpc CreateBackend(CreateBackendRequest) returns (CreateBackendResponse) {}
+	rpc GetBackend(GetBackendRequest) returns (GetBackendResponse) {}
+	rpc ListBackend(ListBackendRequest) returns (ListBackendResponse) {}
+	rpc UpdateBackend(UpdateBackendRequest) returns (UpdateBackendResponse) {}
+	rpc DeleteBackend(DeleteBackendRequest) returns (DeleteBackendResponse) {}
+	rpc ListType(ListTypeRequest) returns (ListTypeResponse) {}
+	rpc CreateTier(CreateTierRequest) returns (CreateTierResponse) {}
+  	rpc GetTier(GetTierRequest) returns (GetTierResponse) {}
+    	rpc ListTiers(ListTierRequest) returns (ListTierResponse) {}
+    	rpc UpdateTier(UpdateTierRequest) returns (UpdateTierResponse) {}
+    	rpc DeleteTier(DeleteTierRequest) returns (DeleteTierResponse) {}
+}
+
+message CreateBackendRequest {
+	BackendDetail backend = 1;
+}
+
+message CreateBackendResponse {
+	BackendDetail backend = 1;
+}
+
+message GetBackendRequest {
+	string id = 1;
+}
+
+message GetBackendResponse {
+	BackendDetail backend = 1;
+}
+
+message ListBackendRequest {
+	int32 limit = 1;
+	int32 offset = 2;
+	repeated string sortKeys = 3;
+	repeated string sortDirs = 4;
+	map<string, string> Filter = 5;
+}
+
+message ListBackendResponse {
+	repeated BackendDetail backends = 1;
+	int32 next = 2;
+}
+
+message UpdateBackendRequest {
+	string id = 1;
+	string access = 2;
+	string security = 3;
+}
+
+message UpdateBackendResponse {
+	BackendDetail backend = 1;
+}
+
+message DeleteBackendRequest {
+	string id = 1;
+}
+
+message DeleteBackendResponse {
+}
+
+message BackendDetail {
+	string id = 1;
+	string tenantId = 2;
+	string userId = 3;
+	string name = 4;
+	string type = 5;
+	string region = 6;
+	string endpoint = 7;
+	string bucketName = 8;
+	string access = 9;
+	string security = 10;
+}
+
+message ListTypeRequest {
+	int32 limit = 1;
+	int32 offset = 2;
+	repeated string sortKeys = 3;
+	repeated string sortDirs = 4;
+	map<string, string> Filter = 5;
+}
+
+message ListTypeResponse {
+	repeated TypeDetail types = 1;
+	int32 next = 2;
+}
+
+message TypeDetail {
+	string name = 1;
+	string description = 2;
+}
+
+message CreateTierRequest {
+	Tier tier = 1;
+}
+
+message CreateTierResponse {
+	Tier tier = 1;
+}
+
+message GetTierRequest {
+	string id = 1;
+}
+
+message GetTierResponse {
+	Tier tier = 1;
+}
+
+message ListTierRequest {
+	int32 limit = 1;
+	int32 offset = 2;
+	repeated string sortKeys = 3;
+	repeated string sortDirs = 4;
+	map<string, string> Filter = 5;
+}
+
+message ListTierResponse {
+	repeated Tier tiers = 1;
+	int32 next = 2;
+}
+
+message UpdateTierRequest {
+	Tier tier = 1;
+}
+
+message UpdateTierResponse {
+	Tier tier = 1;
+}
+
+message DeleteTierRequest {
+	string id = 1;
+}
+
+message DeleteTierResponse {
+}
+
+message Tier {
+	string id = 1;
+    string tenantId = 2;
+	string name = 3;
+	repeated string backends = 4;
+	repeated string tenants = 5;
+}
+
+message UpdateTier {
+	string id = 1;
+	repeated string AddBackends = 3;
+	repeated string DeleteBackends = 4;
+	repeated string AddTenants = 5;
+	repeated string DeleteTenants = 6;
+
+}
+
