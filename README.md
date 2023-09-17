@@ -24,7 +24,8 @@ So, the strategy is to develop the unique components (or delta with exisitng pro
 
 # Progress
 - Initial architecture
-- In progress : We are in the process of brining the s3 metadata management modules from SODA Strato here. - Expected by 17th September 2023
+- In progress : We are in the process of brining the s3 metadata management modules from SODA Strato here. - Expected by 17th September 2023 - Done
+- In progress : [Clean up issue fix](https://github.com/sodafoundation/crystal/issues/4)
 - In progress : Open Source analysis of metadata management project and unique value assessment
 
 # You have any requirements for metadata management? 
