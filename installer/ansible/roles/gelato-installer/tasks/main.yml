@@ -1,0 +1,91 @@
+# Copyright 2022 The SODA Authors.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+---
+
+- name: install Ubuntu system packages for crystal
+  package:
+    name: "{{ item }}"
+    state: present
+  with_items:
+    - libradosstriper-dev
+  when: ansible_os_family == "Debian"
+
+- name: create gelato work directory if it doesn't exist
+  file:
+    path: "{{ item }}"
+    state: directory
+    mode: 0755
+  with_items:
+    - "{{ gelato_work_dir }}"
+    - "{{ gelato_tarball_dir }}"
+
+- name: include scenarios/repository.yml when installing from repository
+  include: scenarios/repository.yml
+  when: install_from == "repository"
+
+- name: include scenarios/release.yml when installing from release
+  include: scenarios/release.yml
+  when: install_from == "release" or install_from == "container"
+
+- name: gelato keystone configuration when keystone is installed by script
+  shell: "{{ item }}"
+  with_items:
+    - bash ./script/keystone.sh config gelato script
+  when: opensds_auth_strategy == "keystone" and install_keystone_with_docker != true
+  become: yes
+
+- name: gelato keystone configuration when keystone is installed by docker
+  shell: "{{ item }}"
+  with_items:
+    - bash ./script/keystone.sh config gelato docker
+  when: opensds_auth_strategy == "keystone" and install_keystone_with_docker == true
+  become: yes
+
+- name: set auth variables for docker-compose configuration
+  replace:
+    path: "{{ gelato_work_dir }}/docker-compose.yml"
+    regexp: "{{ item.regexp }}"
+    replace: "{{ item.replace }}"
+  with_items:
+    - { regexp: 'OS_AUTH_AUTHSTRATEGY=.*$', replace: 'OS_AUTH_AUTHSTRATEGY={{ opensds_auth_strategy }}'}
+
+- name: set image tags for docker-compose configuration
+  replace:
+    path: "{{ gelato_work_dir }}/docker-compose.yml"
+    regexp: "{{ item.regexp }}"
+    replace: "{{ item.replace }}"
+  with_items:
+    - { regexp: 'sodafoundation/crystal-api.*$', replace: 'sodafoundation/crystal-api:{{ gelato_image_tag }}'}
+    - { regexp: 'sodafoundation/crystal-backend.*$', replace: 'sodafoundation/crystal-backend:{{ gelato_image_tag }}'}
+    - { regexp: 'sodafoundation/crystal-s3.*$', replace: 'sodafoundation/crystal-s3:{{ gelato_image_tag }}'}
+    - { regexp: 'sodafoundation/crystal-dataflow.*$', replace: 'sodafoundation/crystal-dataflow:{{ gelato_image_tag }}'}
+    - { regexp: 'sodafoundation/crystal-datamover.*$', replace: 'sodafoundation/crystal-datamover:{{ gelato_image_tag }}'}
+    - { regexp: 'sodafoundation/crystal-file.*$', replace: 'sodafoundation/crystal-file:{{ gelato_image_tag }}'}
+    - { regexp: 'sodafoundation/crystal-block.*$', replace: 'sodafoundation/crystal-block:{{ gelato_image_tag }}'}
+    - { regexp: 'sodafoundation/crystal-aksk.*$', replace: 'sodafoundation/crystal-aksk:{{ gelato_image_tag }}'}
+    - { regexp: 'sodafoundation/crystal-metadata.*$', replace: 'sodafoundation/crystal-metadata:{{ gelato_image_tag }}'}
+  when: install_from == "release" or install_from == "container"
+
+- name: start service
+  shell: docker compose up -d
+  args:
+    chdir: "{{ gelato_work_dir }}"
+
+- name: wait for service to start normally
+  wait_for:
+    host: 127.0.0.1
+    port: 8089
+    delay: 10
+    timeout: 120
