@@ -1,0 +1,3141 @@
+# Copyright 2020 The SODA Authors.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+# SODA S3 API are updated for s3-compatibility, Some of the references are as follows:
+#
+# https://docs.aws.amazon.com/AmazonS3/latest/gsg/GetStartedWithS3.html
+#
+# New SODA s3 APIs are to be authenticated. The following explains request
+# authentication with the AWS Signature Version 4 algorithm.
+#
+# https://docs.aws.amazon.com/AmazonS3/latest/API/sig-v4-authenticating-requests.html
+#
+openapi: 3.0.0
+servers:
+  - description: SwaggerHub API Auto Mocking
+    url: 'https://virtserver.swaggerhub.com/open83/crystal/1.0.0'
+  - url: 'http://virtserver.swaggerhub.com/opensds.io/OpenSDS-crystal/1.0.0'
+info:
+  description: |
+    SODA crystal API to manage crystal backend storages.
+    You can find out more about Swagger at
+    [https://sodafoundation.io/](https://sodafoundation.io/)
+  version: 1.0.0
+  title: SODA crystal API
+  termsOfService: '://www.linuxfoundation.org/terms'
+  contact:
+    name: SODA Support
+    url: 'https://opensds.slack.com'
+    email: support@sodafoundation.io
+  license:
+    name: Apache 2.0
+    url: 'http://www.apache.org/licenses/LICENSE-2.0.html'
+tags:
+  - name: Backend
+    description: crystal cloud storage backends
+    externalDocs:
+      description: Find out more
+      url: 'https://sodafoundation.io/'
+  - name: Metadata
+    description: crystal metadata management
+    externalDocs:
+      description: Find out more
+      url: 'https://sodafoundation.io/'
+  - name: Types
+    description: Supported storage backends
+    externalDocs:
+      description: Find out more
+      url: 'https://sodafoundation.io/'
+  - name: Plan
+    description: Migration plan
+    externalDocs:
+      description: Find out more
+      url: 'https://sodafoundation.io/'
+  - name: Job
+    description: Migration job
+    externalDocs:
+      description: Find out more
+      url: 'https://sodafoundation.io/'
+  - name: Policy
+    description: Schedule policy of plan.
+    externalDocs:
+      description: Find out more
+      url: 'https://sodafoundation.io/'
+  - name: s3
+    description: s3 interface of crystal
+    externalDocs:
+      description: Find out more
+      url: 'https://sodafoundation.io/'
+  - name: FileShare
+    description: crystal cloud file shares
+    externalDocs:
+      description: Find out more
+      url: 'https://sodafoundation.io/'
+  - name: Volume
+    description: crystal cloud Volume
+    externalDocs:
+      description: Find out more
+      url: 'https://sodafoundation.io/'
+  - name: Backup
+    description: crystal interface for object archival and restore
+    externalDocs:
+      description: Find out more
+      url: 'https://sodafoundation.io/'
+# schemes:
+# - http
+  - name: Storage Service Plan
+    description: crystal Storage Service Plan(SSP)
+    externalDocs:
+      description: Find out more
+      url: 'https://sodafoundation.io/'
+  - name: AccessKey SecretKey
+    description: Interface for Access Key and Secret Key generation
+    externalDocs:
+      description: Find out more
+      url: 'https://sodafoundation.io/'
+paths:
+  '/v1/{project_id}/aksks':
+    post:
+      tags:
+        - AKSK
+      summary: Create a new AKSK for a User.
+      operationId: addAKSK
+      parameters:
+        - name: project_id
+          in: path
+          required: true
+          description: AKSK to be generated for User of a Project / Tenant. project_id is same as tenant_id.
+          schema:
+            type: string
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AKSKResponse'
+        '401':
+          description: Unauthorized. Token not found in header
+      requestBody:
+        $ref: '#/components/requestBodies/AKSK'
+  '/v1/{project_id}/aksks/{user_id}':
+    get:
+      tags:
+        - AKSK
+      summary: Get the AKSK for a UserId.
+      operationId: getAKSK
+      parameters:
+        - name: project_id
+          in: path
+          required: true
+          description: AKSK to be fetched for a User in Project project_id. project_id is same as tenant_id.
+          schema:
+            type: string
+        - name: user_id
+          in: path
+          required: true
+          description: AKSK to be fetched for a User of user_id in Project of project_id. project_id is same as tenant_id.
+          schema:
+            type: string
+      responses:
+        '200':
+          description: successful operation.
+          content:
+            application/array:
+              schema:
+                  $ref: '#/components/schemas/AKSKGetResponse'
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized. Token not found in header
+        '403':
+          description: Forbidden
+        '404':
+          description: The resource does not exist i.e. AKSK does not exist.
+    delete:
+      tags:
+        - AKSK
+      summary: Delete AKSKs for a user.
+      operationId: deleteAKSK
+      parameters:
+        - name: project_id
+          in: path
+          required: true
+          description: AKSKs to be deleted for a User in project_id.
+          schema:
+            type: string
+        - name: user_id
+          in: path
+          required: true
+          description: AKSK to be deleted for a User of user_id in Project of project_id. project_id is same as tenant_id.
+          schema:
+            type: string
+      responses:
+        '200':
+          description: successful operation
+        '401':
+          description: Unauthorized. Token not found in header
+  '/v1/{project_id}/aksks/{user_id}/download':
+    get:
+      tags:
+        - AKSK
+      summary: Download the AKSKs for a UserId.
+      operationId: downloadAKSK
+      parameters:
+        - name: project_id
+          in: path
+          required: true
+          description: AKSKs to be downloaded for a User in project_id.
+          schema:
+            type: string
+        - name: user_id
+          in: path
+          required: true
+          description: AKSK to be downloaded for a User of user_id in Project of project_id. project_id is same as tenant_id.
+          schema:
+            type: string
+      responses:
+        '200':
+          description: successful operation.
+          content:
+            application/array:
+              schema:
+                  $ref: '#/components/schemas/AKSKGetResponse'
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized. Token not found in header
+        '403':
+          description: Forbidden
+        '404':
+          description: The resource does not exist i.e. AKSK does not exist.
+  '/v1/backends/sync':
+    post:
+      tags:
+        - Metadata
+      summary: Sync metadata for all backends
+      operationId: syncMetadata
+      responses:
+        '200':
+          description: sync request sent successfully
+        '415':
+          description: Unsupported Media Type
+        '401':
+          description: Unauthorized. Token not found in header
+  '/v1/backends/{backendId}/sync':
+    parameters:
+      - name: backendId
+        in: path
+        description: The backendId
+        required: true
+        schema:
+          type: string
+    post:
+      tags:
+        - Metadata
+      summary: Sync metadata for a backend
+      responses:
+        '200':
+          description: sync request sent successfully
+        '415':
+          description: Unsupported Media Type
+        '401':
+          description: Unauthorized. Token not found in header
+  '/v1/backends/metadata':
+    get:
+      tags:
+        - Metadata
+      summary: list metadata for all backends
+      operationId: getMetadata
+      parameters:
+        - name: backendName
+          in: query
+          description: filter based on backend name
+          schema:
+            type: string
+        - name: region
+          in: query
+          description: filter based on region
+          schema:
+            type: string
+        - name: sizeOfObject
+          in: query
+          description: filter based on size of object
+          schema:
+            type: integer
+        - name: bucketName
+          in: query
+          description: filter based on bucket name
+          schema:
+            type: string
+        - name: sizeOfBucket
+          in: query
+          description: filter based on bucket size
+          schema:
+            type: integer
+        - name: bucketSizeOperator
+          in: query
+          description: filter based on bucket size operator, like gte, lte, equal etc
+          schema:
+            type: string
+        - name: objectSizeOperator
+          in: query
+          description: filter based on object size operator, like gte, lte, equal etc
+          schema:
+            type: string
+        - name: objectName
+          in: query
+          description: filter based on object name
+          schema:
+            type: string
+        - name: limit
+          in: query
+          description: filter based on limit of listing
+          schema:
+            type: integer
+        - name: offset
+          in: query
+          description: filter based on offset
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: successful operation.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  buckets:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Metadata'
+                  next:
+                    type: integer
+                    example: 1
+        '415':
+          description: Unsupported Media Type
+        '401':
+          description: Unauthorized. Token not found in header
+  '/v1/{tenantId}/backends':
+    parameters:
+      - name: tenantId
+        in: path
+        description: The tenant UUID in a multi-tenancy environment.
+        required: true
+        schema:
+          type: string
+    post:
+      tags:
+        - Backend
+      summary: Create a backend.
+      operationId: createBackend
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Backend'
+        '415':
+          description: Unsupported Media Type
+        '401':
+          description: Unauthorized. Token not found in header
+      requestBody:
+        $ref: '#/components/requestBodies/Backend'
+    get:
+      tags:
+        - Backend
+      summary: List all backends.
+      operationId: listBackend
+      parameters:
+        - name: type
+          in: query
+          description: Filter the backend by backend type.
+          schema:
+            type: string
+            enum: &CLOUD_BACKENDS
+              - hw-obs
+              - aws-s3
+              - azure-blob
+              - ceph-s3
+              - gcp-s3
+              - fusionstorage-object
+              - ibm-cos
+              - yig
+              - aws-file
+              - azure-file
+            example: *CLOUD_BACKENDS
+        - name: name
+          in: query
+          description: Filter the backend by name.
+          schema:
+            type: string
+        - name: region
+          in: query
+          description: Filter the backend by region.
+          schema:
+            type: string
+        - $ref: '#/components/parameters/offset'
+        - $ref: '#/components/parameters/limit'
+        - $ref: '#/components/parameters/sort'
+      responses:
+        '200':
+          description: successful operation.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  backends:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Backend_List'
+                  next:
+                    type: integer
+                    example: 1
+        '401':
+          description: Unauthorized. Token not found in header
+  '/v1/{tenantId}/backends/{backendId}':
+    parameters:
+      - name: tenantId
+        in: path
+        description: The tenantId UUID in a multi-tenancy environment.
+        required: true
+        schema:
+          type: string
+      - name: backendId
+        in: path
+        description: The backend ID.
+        required: true
+        schema:
+          type: string
+    get:
+      tags:
+        - Backend
+      summary: Get a backend information.
+      operationId: getBackend
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Backend_List'
+        '401':
+          description: Unauthorized. Token not found in header
+        '404':
+          description: The resource does not exist.
+    put:
+      tags:
+        - Backend
+      summary: Update a backend.
+      operationId: updateBackend
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Backend'
+        '401':
+          description: Unauthorized. Token not found in header
+        '404':
+          description: The resource does not exist.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                access:
+                  description: Updated the specified backend access Id
+                  type: string
+                  example: 'AMIKJGNJLHUEBWTNDL6X'
+                security:
+                  description: Updated the specified backend security Id
+                  type: string
+                  example: 'Fsgs5KHAcs12420yGHNDGne8x8i5naHvdf/xZbTH'
+    delete:
+      tags:
+        - Backend
+      summary: Deletes a backend.
+      operationId: deleteBackend
+      responses:
+        '200':
+          description: Delete success
+        '400':
+          description: Invalid ID supplied
+        '401':
+          description: Unauthorized. Token not found in header
+        '404':
+          description: The resource does not exist.
+        '500':
+          description: The backend can not be deleted. please delete bucket first
+  '/v1/{tenantId}/types':
+    parameters:
+      - name: tenantId
+        in: path
+        description: The tenantId UUID in a multi-tenancy environment.
+        required: true
+        schema:
+          type: string
+    get:
+      tags:
+        - Types
+      summary: List all supported storage backend type.
+      operationId: listBackendTypes
+      parameters:
+        - name: name
+          in: query
+          description: Filter the backend by name.
+          schema:
+            type: string
+        - $ref: '#/components/parameters/offset'
+        - $ref: '#/components/parameters/limit'
+        - $ref: '#/components/parameters/sort'
+      responses:
+        '200':
+          description: successful operation.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  backends:
+                    type: array
+                    items:
+                      oneOf:
+                        - $ref: '#/components/schemas/AWS_Type'
+                        - $ref: '#/components/schemas/Huawei_Type'
+                        - $ref: '#/components/schemas/Azure_Type'
+                        - $ref: '#/components/schemas/Ceph_Type'
+                        - $ref: '#/components/schemas/GCP_Type'
+                        - $ref: '#/components/schemas/FS_Type'
+                        - $ref: '#/components/schemas/IBM_Type'
+                        - $ref: '#/components/schemas/YIG_Type'
+                        - $ref: '#/components/schemas/Alibaba_Type'
+                        - $ref: '#/components/schemas/AWS_File_Type'
+                        - $ref: '#/components/schemas/Azure_File_Type'
+                        - $ref: '#/components/schemas/GCP_File_Type'
+                        - $ref: '#/components/schemas/AWS_Block_Type'
+                        - $ref: '#/components/schemas/Hw_Block_Type'
+                        - $ref: '#/components/schemas/Hw_File_Type'
+                        - $ref: '#/components/schemas/Sony_Oda_Type'
+
+
+                  next:
+                    type: integer
+                    example: 16
+        '401':
+          description: Unauthorized. Token not found in header
+  '/v1/{tenantId}/plans':
+    parameters:
+      - name: tenantId
+        in: path
+        description: The tenant UUID in a multi-tenancy environment.
+        required: true
+        schema:
+          type: string
+    post:
+      tags:
+        - Plan
+      summary: Create a plan.
+      operationId: createPlan
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  plan:
+                    $ref: '#/components/schemas/Plan'
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized. Token not found in header
+      requestBody:
+        $ref: '#/components/requestBodies/Plan'
+    get:
+      tags:
+        - Plan
+      summary: List all plans.
+      operationId: listPlans
+      parameters:
+        - name: type
+          in: query
+          description: >-
+            Filter the plans by plan type. Only migration support currently. New
+            type will be added in the future.
+          schema:
+            type: string
+            enum:
+              - migration
+        - name: name
+          in: query
+          description: Filter the plan by name.
+          schema:
+            type: string
+        - $ref: '#/components/parameters/offset'
+        - $ref: '#/components/parameters/limit'
+        - $ref: '#/components/parameters/sort'
+      responses:
+        '200':
+          description: successful operation.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  plans:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Plan'
+                  next:
+                    type: integer
+                    example: 1
+        '401':
+          description: Unauthorized. Token not found in header
+  '/v1/{tenantId}/plans/{planId}':
+    parameters:
+      - name: tenantId
+        in: path
+        description: The tenant UUID in a multi-tenancy environment.
+        required: true
+        schema:
+          type: string
+      - name: planId
+        in: path
+        description: The plan ID
+        required: true
+        schema:
+          type: string
+    get:
+      tags:
+        - Plan
+      summary: Get a plan.
+      operationId: getPlan
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  plan:
+                    $ref: '#/components/schemas/Plan'
+          description: successful operation.
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized. Token not found in header
+        '403':
+          description: Forbidden
+        '404':
+          description: The resource does not exist i.e. Plan does not exist.
+    put:
+      tags:
+        - Plan
+      summary: Update a plan.
+      operationId: updatePlan
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  plan:
+                    $ref: '#/components/schemas/Plan'
+        '401':
+          description: Unauthorized. Token not found in header
+        '404':
+          description: The resource does not exist i.e. Plan does not exist.
+      requestBody:
+        $ref: '#/components/requestBodies/Plan'
+    delete:
+      tags:
+        - Plan
+      summary: Delete a plan.
+      operationId: deletePlan
+      responses:
+        '200':
+          description: Delete success
+          content:
+            application/json:
+              schema:
+                type: object
+        '401':
+          description: Unauthorized. Token not found in header
+        '404':
+          description: The resource does not exist i.e. Plan does not exist.
+    post:
+      tags:
+        - Plan
+      summary: Run a plan.
+      operationId: runPlan
+      responses:
+        '200':
+          description: Run success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  jobId:
+                    type: string
+                    description: Id of the Job created for the Plan
+                    example: '5eaa86fe6f384d000116d1d5'
+        '401':
+          description: Unauthorized. Token not found in header
+        '404':
+          description: The resource does not exist i.e. Plan does not exist.
+  '/v1/{tenantId}/jobs':
+    parameters:
+      - name: tenantId
+        in: path
+        description: The tenant UUID in a multi-tenancy environment.
+        required: true
+        schema:
+          type: string
+    get:
+      tags:
+        - Job
+      summary: List all jobs.
+      operationId: listJobs
+      parameters:
+        - name: type
+          in: query
+          description: >-
+            Filter the jobs by job type. Only migration support currently. New
+            type will be added in the future.
+          schema:
+            type: string
+            enum: &JOBS
+              - migration
+            example: migration
+        - $ref: '#/components/parameters/offset'
+        - $ref: '#/components/parameters/limit'
+        - $ref: '#/components/parameters/sort'
+      responses:
+        '200':
+          description: successful operation.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  jobs:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Job'
+                  next:
+                    type: integer
+                    example: 1
+        '401':
+          description: Unauthorized. Token not found in header
+  '/v1/{tenantId}/jobs/{jobId}':
+    parameters:
+      - name: tenantId
+        in: path
+        description: The tenant UUID in a multi-tenancy environment.
+        required: true
+        schema:
+          type: string
+      - name: jobId
+        in: path
+        description: The job ID
+        required: true
+        schema:
+          type: string
+    get:
+      tags:
+        - Job
+      summary: Get a job.
+      operationId: getJob
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  job:
+                    $ref: '#/components/schemas/Job'
+          description: successful operation.
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized. Token not found in header
+        '403':
+          description: Forbidden
+        '404':
+          description: The resource does not exist.
+  '/v1/{tenantId}/policies':
+    parameters:
+      - name: tenantId
+        in: path
+        description: The tenant UUID in a multi-tenancy environment.
+        required: true
+        schema:
+          type: string
+    post:
+      tags:
+        - Policy
+      summary: Create a policy.
+      operationId: createPolicy
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  policy:
+                    $ref: '#/components/schemas/Policy'
+        '401':
+          description: Unauthorized. Token not found in header
+      requestBody:
+        $ref: '#/components/requestBodies/Policy'
+    get:
+      tags:
+        - Policy
+      summary: List all policies.
+      operationId: listPolicies
+      parameters:
+        - $ref: '#/components/parameters/offset'
+        - $ref: '#/components/parameters/limit'
+        - $ref: '#/components/parameters/sort'
+      responses:
+        '200':
+          description: successful operation.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  policies:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Policy'
+                  next:
+                    type: integer
+                    example: 1
+        '401':
+          description: Unauthorized. Token not found in header
+  '/v1/{tenantId}/policies/{policyId}':
+    parameters:
+      - name: tenantId
+        in: path
+        description: The tenant UUID in a multi-tenancy environment.
+        required: true
+        schema:
+          type: string
+      - name: policyId
+        in: path
+        description: The policy ID
+        required: true
+        schema:
+          type: string
+    get:
+      tags:
+        - Policy
+      summary: Get a policy.
+      operationId: getPolicy
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  policy:
+                    $ref: '#/components/schemas/Policy'
+          description: successful operation.
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized. Token not found in header
+        '403':
+          description: Forbidden
+        '404':
+          description: The resource does not exist.
+    put:
+      tags:
+        - Policy
+      summary: Update a policy.
+      operationId: updatePolicy
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  policy:
+                    $ref: '#/components/schemas/Policy'
+      requestBody:
+        $ref: '#/components/requestBodies/Policy'
+    delete:
+      tags:
+        - Policy
+      summary: Delete a policy.
+      operationId: deletePolicy
+      responses:
+        '200':
+          description: Delete success
+          content:
+            application/json:
+              schema:
+                type: object
+        '400':
+          description: Invalid ID supplied
+        '401':
+          description: Unauthorized. Token not found in header
+  '/':
+    get:
+      tags:
+        - s3
+      summary: List Buckets.
+      operationId: listBuckets
+      responses:
+        '200':
+          description: successful operation list of buckets
+          content:
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/ListAllMyBucketsResult'
+        '403':
+          description: Forbidden; Access Denied, InvalidAccessKey, SignatureDoesNotMatch
+  '/{bucketName}':
+    parameters:
+      - name: bucketName
+        in: path
+        description: The name of the bucket
+        required: true
+        schema:
+          type: string
+    put:
+      tags:
+        - s3
+      summary: Create a bucket.
+      operationId: bucketPut
+      responses:
+        '200':
+          description: No Content, i.e Bucket created successfully
+        '403':
+          description: Forbidden; Access Denied, InvalidAccessKey, SignatureDoesNotMatch
+        '500':
+          description: GetBackend Failed
+      requestBody:
+        content:
+          application/xml:
+            schema:
+              $ref: '#/components/schemas/CreateBucketConfiguration'
+    get:
+      tags:
+        - s3
+      summary: Get Objects of the Bucket
+      operationId: listObjects
+      responses:
+        '200':
+          description: successful list objects
+          content:
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/ListBucketResult'
+        '403':
+          description: Forbidden; Access Denied, InvalidAccessKey, SignatureDoesNotMatch
+        '404':
+          description: Not Found i.e. No Such Bucket
+    delete:
+      tags:
+        - s3
+      summary: Delete a bucket.
+      operationId: bucketdelete
+      responses:
+        '204':
+          description: No Content, i.e Bucket deleted successfully
+        '403':
+          description: Forbidden; Access Denied, InvalidAccessKey, SignatureDoesNotMatch
+        '404':
+          description: Not Found i.e. No Such Bucket
+        '409':
+          description: Bucket Not Empty
+  '/{bucketName}/{object}':
+    parameters:
+      - name: bucketName
+        in: path
+        description: the name of bucket
+        required: true
+        schema:
+          type: string
+      - name: object
+        in: path
+        description: the name of object
+        required: true
+        schema:
+          type: string
+      - name: Range
+        in: query
+        description: >-
+          the Header parameter Range value like "bytes:1-10",used for multipart
+          download
+        required: false
+        schema:
+          type: string
+      - name: uploads
+        in: query
+        description: The format is ''/{object}?uploads'',used for init multipartupload
+        required: false
+        schema:
+          type: string
+      - name: partNumber
+        in: query
+        description: >-
+          the format is
+          '/{object}?partNumber={partNumber}&uploadId={UploadId}',must be used
+          with uploadId parameter ,used for upload a part
+        required: false
+        schema:
+          type: string
+      - name: uploadId
+        in: query
+        description: >-
+          the format is '/{object}?uploadId={UploadId}',used for compelete
+          multipart upload and abort multiparupload
+        required: false
+        schema:
+          type: string
+
+    put:
+      tags:
+        - s3
+      summary: Upload Object.
+      operationId: objectPut
+      responses:
+        '200':
+          description: Successful Upload Object
+        '403':
+          description: Forbidden; Access Denied, InvalidAccessKey, SignatureDoesNotMatch
+        '404':
+          description: Not Found i.e. No Such Bucket
+    get:
+      tags:
+        - s3
+      summary: Download Object
+      operationId: objectGet
+      responses:
+        '200':
+          description: Successful Download Object
+        '403':
+          description: Forbidden; Access Denied, InvalidAccessKey, SignatureDoesNotMatch
+        '404':
+          description: Not Found i.e. No Such Key
+    delete:
+      tags:
+        - s3
+      summary: Delete Object.
+      operationId: objectdelete
+      responses:
+        '200':
+          description: Successful Deletion of Object
+          content:
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+        '403':
+          description: Forbidden; Access Denied, InvalidAccessKey, SignatureDoesNotMatch
+        '404':
+          description: Not Found i.e. No Such Key
+
+  '/{bucketName}/{Object}':
+    parameters:
+      - name: bucketName
+        in: path
+        description: the name of bucket
+        required: true
+        schema:
+          type: string
+      - name: object
+        in: path
+        description: the name of object to be archived
+        required: true
+        schema:
+          type: string
+      - name: Range
+        in: query
+        description: >-
+          the Header parameter Range value like "bytes:1-10",used for multipart archival
+          download
+        required: false
+        schema:
+          type: string
+      - name: uploads
+        in: query
+        description: The format is '/{object}?uploads',used for init multipartarchive
+        required: false
+        schema:
+          type: string
+      - name: partNumber
+        in: query
+        description: >-
+          the format is
+          '/{object}?partNumber={partNumber}&uploadId={UploadId}',must be used
+          with uploadId parameter, used for upload and archive a part
+        required: false
+        schema:
+          type: string
+      - name: uploadId
+        in: query
+        description: >-
+          the format is '/{object}?uploadId={UploadId}',used for compelete
+          multipart archival and abort multipartarchive
+        required: false
+        schema:
+          type: string
+      - name: X-AMZ-Storage-Class
+        in: header
+        description: For archiving object, the request header to describe storage class
+        required: false
+        schema:
+          type: string
+      - name: restore
+        in: query
+        description: >-
+          the format is '/{object}?restore', used to restore archived object
+        required: false
+        schema:
+          type: string
+
+    put:
+      tags:
+        - Backup
+      summary: Upload Object into archival storage.
+      operationId: backupPut
+      responses:
+        '200':
+          description: Successful Archive Object
+        '403':
+          description: Forbidden; Access Denied, InvalidAccessKey, SignatureDoesNotMatch
+        '404':
+          description: Not Found i.e. No Such Bucket
+    post:
+      tags:
+        - Backup
+      summary: Restore Object from archival storage.
+      operationId: objectPost
+      requestBody:
+        description: Required inputs for restoring a object.
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RestoreObject'
+      responses:
+        '200':
+          description: Successful restoration of Object initiated
+        '403':
+          description: Forbidden; Access Denied, InvalidAccessKey, SignatureDoesNotMatch, RestoreFailed
+        '404':
+          description: Not Found i.e. No Such Bucket
+        '409':
+          description: Restoration of object is already in porgress
+    get:
+      tags:
+        - Backup
+      summary: Download archived and restored Object
+      operationId: backupGet
+      responses:
+        '200':
+          description: Successful Download of Object
+        '403':
+          description: Forbidden; Access Denied, InvalidAccessKey, SignatureDoesNotMatch
+        '404':
+          description: Not Found i.e. No Such Key
+
+  '/storageClasses':
+    get:
+      tags:
+        - s3
+      summary: Get Supported StorageClasses
+      operationId: getStorageClasses
+      responses:
+        '200':
+          description: >-
+            Get storage classes successfully. There is a map between storage class name
+            and storage tier, as default the storage classes are compatible with aws s3.
+          content:
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/ListStorageClasses'
+  '/v1/{tenantId}/volumes':
+    parameters:
+      - name: tenantId
+        in: path
+        description: The tenant UUID in a multi-tenancy environment.
+        required: true
+        schema:
+          type: string
+    post:
+      tags:
+        - Volume
+      summary: Create a volume.
+      operationId: createVolume
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VolumeResult'
+        '415':
+          description: Unsupported Media Type
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized. Token not found in header
+      requestBody:
+        $ref: '#/components/requestBodies/Volume'
+    get:
+      tags:
+        - Volume
+      summary: List all volumes.
+      operationId: listVolumes
+      parameters:
+        - name: backendId
+          in: query
+          description: Filter the volumes by backend.
+          schema:
+            type: string
+            example: '5eea1a317d038300012f5bfc'
+        - $ref: '#/components/parameters/offset'
+        - $ref: '#/components/parameters/limit'
+        - $ref: '#/components/parameters/sort'
+      responses:
+        '200':
+          description: successful operation.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  volumes:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/VolumeResult'
+                  next:
+                    type: integer
+  '/v1/{tenantId}/volumes/{id}':
+    parameters:
+      - name: tenantId
+        in: path
+        description: The tenantId UUID in a multi-tenancy environment.
+        required: true
+        schema:
+          type: string
+      - name: id
+        in: path
+        description: The volume ID.
+        required: true
+        schema:
+          type: string
+    get:
+      tags:
+        - Volume
+      summary: Get a volume information.
+      operationId: getVolume
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VolumeResult'
+        '401':
+          description: Unauthorized. Token not found in header
+        '404':
+          description: The resource does not exist.
+    put:
+      tags:
+        - Volume
+      summary: Update a volume.
+      operationId: updateVolume
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VolumeResult'
+        '401':
+          description: Unauthorized. Token not found in header
+        '404':
+          description: The resource does not exist.
+      requestBody:
+        $ref: '#/components/requestBodies/VolumeUpdate'
+    delete:
+      tags:
+        - Volume
+      summary: Deletes a volume.
+      operationId: deleteVolume
+      responses:
+        '200':
+          description: Delete success
+          content:
+            application/json:
+              schema:
+                type: object
+        '400':
+          description: Invalid ID supplied
+        '401':
+          description: Unauthorized. Token not found in header
+        '404':
+          description: The resource does not exist.
+        '500':
+          description: The volume can not be deleted. please check status
+  '/v1/{tenantId}/file/shares':
+    parameters:
+      - name: tenantId
+        in: path
+        description: The tenant UUID in a multi-tenancy environment.
+        required: true
+        schema:
+          type: string
+    post:
+      tags:
+        - FileShare
+      summary: Create a fileshare.
+      operationId: createFileShare
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FileShareResult'
+        '415':
+          description: Unsupported Media Type
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized. Token not found in header
+      requestBody:
+        $ref: '#/components/requestBodies/FileShare'
+    get:
+      tags:
+        - FileShare
+      summary: List all file shares.
+      operationId: listFileShare
+      parameters:
+        - name: backendId
+          in: query
+          description: Filter the fileshares by backend.
+          schema:
+            type: string
+            example: '5eea1a317d038300012f5bfc'
+        - $ref: '#/components/parameters/offset'
+        - $ref: '#/components/parameters/limit'
+        - $ref: '#/components/parameters/sort'
+      responses:
+        '200':
+          description: successful operation.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  fileshares:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/FileShareResult'
+                  next:
+                    type: integer
+                    example: 1
+        '401':
+          description: Unauthorized. Token not found in header
+  '/v1/{tenantId}/file/share/{id}':
+    parameters:
+      - name: tenantId
+        in: path
+        description: The tenantId UUID in a multi-tenancy environment.
+        required: true
+        schema:
+          type: string
+      - name: id
+        in: path
+        description: The fileshare ID.
+        required: true
+        schema:
+          type: string
+    get:
+      tags:
+        - FileShare
+      summary: Get a fileshare information.
+      operationId: getFileShare
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FileShareResult'
+        '401':
+          description: Unauthorized. Token not found in header
+        '404':
+          description: The resource does not exist.
+    put:
+      tags:
+        - FileShare
+      summary: Update a fileshare.
+      operationId: updateFileShare
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FileShareResult'
+        '401':
+          description: Unauthorized. Token not found in header
+        '404':
+          description: The resource does not exist.
+      requestBody:
+        $ref: '#/components/requestBodies/FileShareUpdate'
+    delete:
+      tags:
+        - FileShare
+      summary: Deletes a fileshare.
+      operationId: deleteFileShare
+      responses:
+        '200':
+          description: Delete success
+          content:
+            application/json:
+              schema:
+                type: object
+        '400':
+          description: Invalid ID supplied
+        '401':
+          description: Unauthorized. Token not found in header
+        '404':
+          description: The resource does not exist.
+        '500':
+          description: The fileshare can not be deleted. please check status
+
+  '/v1/{tenantId}/tiers':
+    parameters:
+      - name: tenantId
+        in: path
+        description: The tenant UUID in a multi-tenancy environment.
+        required: true
+        schema:
+          type: string
+    post:
+      tags:
+        - Storage Service Plan
+      summary: Create a Storage Service Plan(SSP)
+      operationId: createTiers
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Tier'
+        '415':
+          description: Unsupported Media Type
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized. Token not found in header
+      requestBody:
+        $ref: '#/components/requestBodies/Tier'
+    get:
+      tags:
+        - Storage Service Plan
+      summary: List all Storage Service Plans.
+      operationId: listTiers
+      parameters:
+        - name: name
+          in: query
+          description: Filter the tier by name.
+          schema:
+            type: string
+            example: 'Gold'
+        - $ref: '#/components/parameters/offset'
+        - $ref: '#/components/parameters/limit'
+      responses:
+        '200':
+          description: successful operation.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  tiers:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Tier'
+                  next:
+                    type: integer
+        '401':
+          description: Unauthorized. Token not found in header
+        '404':
+          description: The resource does not exist.
+  '/v1/{tenantId}/tiers/{id}':
+    parameters:
+      - name: tenantId
+        in: path
+        description: The tenantId UUID in a multi-tenancy environment.
+        required: true
+        schema:
+          type: string
+      - name: id
+        in: path
+        description: The tier ID.
+        required: true
+        schema:
+          type: string
+    get:
+      tags:
+        - Storage Service Plan
+      summary: Get a Storage Service Plan information.
+      operationId: getTier
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Tier'
+        '401':
+          description: Unauthorized. Token not found in header
+        '404':
+          description: The resource does not exist.
+    put:
+      tags:
+        - Storage Service Plan
+      summary: Update a Storage Service Plan.
+      operationId: updateTier
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Tier'
+        '401':
+          description: Unauthorized. Token not found in header
+        '404':
+          description: The resource does not exist.
+      requestBody:
+        $ref: '#/components/requestBodies/TierUpdate'
+    delete:
+      tags:
+        - Storage Service Plan
+      summary: Deletes a Storage Service Plan.
+      operationId: deleteTier
+      responses:
+        '200':
+          description: Delete success
+          content:
+            application/json:
+              schema:
+                type: object
+        '400':
+          description: Invalid ID supplied
+        '401':
+          description: Unauthorized. Token not found in header
+        '404':
+          description: The resource does not exist.
+        '500':
+          description: The storage service plan can not be deleted. please check status
+components:
+  parameters:
+    offset:
+      in: query
+      name: offset
+      required: false
+      schema:
+        type: integer
+        minimum: 0
+        default: 0
+      description: The number of items to skip before starting to collect the result set
+    limit:
+      in: query
+      name: limit
+      required: false
+      schema:
+        type: integer
+        minimum: 1
+        default: 1000
+      description: The numbers of items to return
+    sort:
+      in: query
+      name: sort
+      required: false
+      schema:
+        type: string
+      description: >-
+        The sort key and direction of items to return, string must
+        like:"id:asc,name:desc"
+  schemas:
+    Metadata:
+      type: object
+      properties:
+        id:
+          description: The backend ID, generated by server
+          type: string
+          example: '5ea809d2553b0f000116be32'
+        backendName:
+          description: The tenant UUID in a multi-tenancy environment.
+          type: string
+          example: 'demo-aws'
+        type:
+          description: The backend type.
+          type: string
+          example: aws-s3
+          enum: *CLOUD_BACKENDS
+        region:
+          type: string
+          example: ap-south-1
+        numberOfBuckets:
+          description: The total no of buckets.
+          type: integer
+          example: 30
+        numberOfFilteredBuckets:
+          description: The total no of filtered buckets.
+          type: integer
+          example: 10
+    AKSK:
+      type: object
+      required:
+        - Name
+      properties:
+        project_id:
+          description: 'Valid TenantId or ProjectId'
+          type: string
+          example: 94b280022d0c4401bcf3b0ea85870519
+        user_id:
+          description: 'Valid User ID'
+          type: string
+          example: 558057c4256545bd8a307c37464003c9
+    Backend_Request:
+      type: object
+      properties:
+        name:
+          description: The backend name specified by user.
+          type: string
+          example: backend001
+        type:
+          description: The backend type.
+          type: string
+          example: aws-s3
+          enum: *CLOUD_BACKENDS
+        region:
+          type: string
+          example: ap-south-1
+        endpoint:
+          type: string
+          example: s3.ap-south-1.amazonaws.com
+        access:
+          type: string
+          example: '4X7JQDFTCYUNWFBRYZVC'
+        security:
+          type: string
+          example: '9hr0ekZgg0vZHulEekTVfWuu1lnPFvpVAJQNHXdn'
+    Backend_List:
+      type: object
+      properties:
+        id:
+          description: The backend ID, generated by server
+          type: string
+          example: '5ea809d2553b0f000116be32'
+        tenantId:
+          description: The tenant UUID in a multi-tenancy environment.
+          type: string
+          example: '94b280022d0c4401bcf3b0ea85870519'
+        userId:
+          description: The user UUID in a multi-tenancy environment.
+          type: string
+          example: '558057c4256545bd8a307c37464003c9'
+        name:
+          description: The backend name specified by user.
+          type: string
+          example: backend001
+        type:
+          description: The backend type.
+          type: string
+          example: aws-s3
+          enum: *CLOUD_BACKENDS
+        region:
+          type: string
+          example: ap-south-1
+        endpoint:
+          type: string
+          example: s3.ap-south-1.amazonaws.com
+    Backend:
+      type: object
+      properties:
+        id:
+          description: The backend ID, generated by server
+          type: string
+          example: '5ea809d2553b0f000116be32'
+        tenantId:
+          description: The tenant UUID in a multi-tenancy environment.
+          type: string
+          example: '94b280022d0c4401bcf3b0ea85870519'
+        userId:
+          description: The user UUID in a multi-tenancy environment.
+          type: string
+          example: '558057c4256545bd8a307c37464003c9'
+        name:
+          description: The backend name specified by user.
+          type: string
+          example: backend001
+        type:
+          description: The backend type.
+          type: string
+          example: aws-s3
+          enum: *CLOUD_BACKENDS
+        region:
+          type: string
+          example: ap-south-1
+        endpoint:
+          type: string
+          example: s3.ap-south-1.amazonaws.com
+        access:
+          type: string
+          example: '4X7JQDFTCYUNWFBRYZVC'
+        security:
+          type: string
+          example: '9hr0ekZgg0vZHulEekTVfWuu1lnPFvpVAJQNHXdn'
+    AWS_Type:
+      type: object
+      properties:
+        name:
+          description: The backend type.
+          type: string
+          example: aws-s3
+        description:
+          description: The backend type description.
+          type: string
+          example: AWS Simple Cloud Storage Service(S3)
+    Huawei_Type:
+      type: object
+      properties:
+        name:
+          description: The backend type.
+          type: string
+          example: hw-obs
+        description:
+          description: The backend type description.
+          type: string
+          example: Huawei Storage Object Service(OBS)
+    Azure_Type:
+      type: object
+      properties:
+        name:
+          description: The backend type.
+          type: string
+          example: azure-blob
+        description:
+          description: The backend type description.
+          type: string
+          example: Azure Blob Storage
+    Ceph_Type:
+      type: object
+      properties:
+        name:
+          description: The backend type.
+          type: string
+          example: ceph-s3
+        description:
+          description: The backend type description.
+          type: string
+          example: Ceph Object Storage
+    GCP_Type:
+      type: object
+      properties:
+        name:
+          description: The backend type.
+          type: string
+          example: gcp-s3
+        description:
+          description: The backend type description.
+          type: string
+          example: GCP Storage
+    FS_Type:
+      type: object
+      properties:
+        name:
+          description: The backend type.
+          type: string
+          example: fusionstorage-object
+        description:
+          description: The backend type description.
+          type: string
+          example: Huawei Fusionstorage Object Storage
+    IBM_Type:
+      type: object
+      properties:
+        name:
+          description: The backend type.
+          type: string
+          example: ibm-cos
+        description:
+          description: The backend type description.
+          type: string
+          example: IBM Cloud Object Storage
+    YIG_Type:
+      type: object
+      properties:
+        name:
+          description: The backend type.
+          type: string
+          example: yig
+        description:
+          description: The backend type description.
+          type: string
+          example: YIG Storage
+    Alibaba_Type:
+      type: object
+      properties:
+        name:
+          description: The backend type.
+          type: string
+          example: alibaba-oss
+        description:
+          description: The backend type description.
+          type: string
+          example: Alibaba Object Storage Service(OSS)
+    AWS_File_Type:
+      type: object
+      properties:
+        name:
+          description: The backend type.
+          type: string
+          example: aws-file
+        description:
+          description: The backend type description.
+          type: string
+          example: AWS File Service
+    Azure_File_Type:
+      type: object
+      properties:
+        name:
+          description: The backend type.
+          type: string
+          example: azure-file
+        description:
+          description: The backend type description.
+          type: string
+          example: Azure File Service
+    GCP_File_Type:
+      type: object
+      properties:
+        name:
+          description: The backend type.
+          type: string
+          example: gcp-file
+        description:
+          description: The backend type description.
+          type: string
+          example: GCP File Service
+    AWS_Block_Type:
+      type: object
+      properties:
+        name:
+          description: The backend type.
+          type: string
+          example: aws-block
+        description:
+          description: The backend type description.
+          type: string
+          example: AWS Block Service
+    Hw_File_Type:
+      type: object
+      properties:
+        name:
+          description: The backend type.
+          type: string
+          example: hw-file
+        description:
+          description: The backend type description.
+          type: string
+          example: Huawei File Service
+    Hw_Block_Type:
+      type: object
+      properties:
+        name:
+          description: The backend type.
+          type: string
+          example: hw-block
+        description:
+          description: The backend type description.
+          type: string
+          example: Hw Block Service
+    Sony_Oda_Type:
+      type: object
+      properties:
+        name:
+          description: The backend type.
+          type: string
+          example: sony-oda
+        description:
+          description: The backend type description.
+          type: string
+          example: Sony-ODA Object Storage
+    KV:
+      type: object
+      properties:
+        key:
+          description: Key of the Key-Value object.
+          type: string
+          example: Image001.PNG
+        Value:
+          description: Value of the Key-Value object.
+          type: string
+          example: '&#34;d97849a5d11d7f7f90e0c1609d091d0a&#34;'
+    Tag:
+      type: object
+      properties:
+        key:
+          description: Key of the Tag object.
+          type: string
+          example: Name
+        Value:
+          description: Value of the Tag object.
+          type: string
+          example: soda
+      required:
+        - Name
+    Fields:
+      type: object
+      properties:
+        CreationTimeAtBackend:
+          type: object
+          properties:
+            kind:
+              type: object
+              properties:
+                StringValue:
+                  type: string
+                  example: '2020-06-17T19:44:06Z'
+        CreationToken:
+          type: object
+          properties:
+            kind:
+              type: object
+              properties:
+                StringValue:
+                  type: string
+                  example: 'J7UWp#KX7BPi#zC5]{0j2/I54ukWP?j~[d3H'
+        FileSystemId:
+          type: object
+          properties:
+            kind:
+              type: object
+              properties:
+                StringValue:
+                  type: string
+                  example: 'fs-68e26cb9'
+        FileSystemSize:
+          type: object
+          properties:
+            kind:
+              type: object
+              properties:
+                StructValue:
+                  type: object
+                  properties:
+                    fields:
+                      type: object
+                      properties:
+                        Timestamp:
+                          type: object
+                          properties:
+                            kind:
+                              type: object
+                              properties:
+                                NumberValue:
+                                  type: integer
+                                  example: 0
+                        Value:
+                          type: object
+                          properties:
+                            kind:
+                              type: object
+                              properties:
+                                NumberValue:
+                                  type: integer
+                                  example: 6144
+                        ValueInIA:
+                          type: object
+                          properties:
+                            kind:
+                              type: object
+                              properties:
+                                NumberValue:
+                                  type: integer
+                                  example: 0
+                        ValueInStandard:
+                          type: object
+                          properties:
+                            kind:
+                              type: object
+                              properties:
+                                NumberValue:
+                                  type: integer
+                                  example: 6144
+        LifeCycleState:
+          type: object
+          properties:
+            kind:
+              type: object
+              properties:
+                StringValue:
+                  type: string
+                  enum:
+                    - creating
+                    - available
+                    - updating
+                    - deleting
+                    - deleted
+                  example: 'available'
+        Name:
+          type: object
+          properties:
+            kind:
+              type: object
+              properties:
+                StringValue:
+                  type: string
+                  example: 'sodafs'
+        NumberOfMountTargets:
+          type: object
+          properties:
+            kind:
+              type: object
+              properties:
+                NumberValue:
+                  type: integer
+                  example: 0
+        OwnerId:
+          type: object
+          properties:
+            kind:
+              type: object
+              properties:
+                StringValue:
+                  type: string
+                  example: '676599967111'
+        PerformanceMode:
+          type: object
+          properties:
+            kind:
+              type: object
+              properties:
+                StringValue:
+                  type: string
+                  enum:
+                    - generalPurpose
+                    - maxIO
+                  example: 'maxIO'
+        ProvisionedThroughputInMibps:
+          type: object
+          properties:
+            kind:
+              type: object
+              properties:
+                NumberValue:
+                  type: integer
+                  example: 1
+        ThroughputMode:
+          type: object
+          properties:
+            kind:
+              type: object
+              properties:
+                StringValue:
+                  type: string
+                  enum:
+                    - bursting
+                    - provisioned
+                  example: 'provisioned'
+    VolumeFields:
+      type: object
+      properties:
+        CreationTimeAtBackend:
+          type: object
+          properties:
+            kind:
+              type: object
+              properties:
+                StringValue:
+                  type: string
+                  example: '2020-06-17T19:44:06Z'
+        StartTimeAtBackend:
+          type: object
+          properties:
+            kind:
+              type: object
+              properties:
+                StringValue:
+                  type: string
+                  example: '2020-06-17T19:44:06Z'
+        VolumeId:
+          type: object
+          properties:
+            kind:
+              type: object
+              properties:
+                StringValue:
+                  type: string
+                  example: vol-03deedaee2de0060f
+        Progress:
+          type: object
+          properties:
+            kind:
+              type: object
+              properties:
+                NumberValue:
+                  type: integer
+                  example: 0
+    Connector:
+      type: object
+      properties:
+        StorType:
+          $ref: '#/components/schemas/ConnType'
+        BucketName:
+          type: string
+          description: >-
+            The name of bucket which is created in SODA crystal. When the type of
+            connector is opensds-obj, this parameter should be provided.
+          example: bucket001
+    ConnType:
+      type: string
+      description: Connector type.
+      example: opensds-obj
+      enum: *CLOUD_BACKENDS
+    Plan:
+      type: object
+      properties:
+        Id:
+          description: The plan ID, generated by server
+          type: string
+          example: '5eaa81fd6f384d000116d1d4'
+        TenantId:
+          description: The tenant UUID in a multi-tenancy environment.
+          type: string
+          example: '94b280022d0c4401bcf3b0ea85870519'
+        UserId:
+          description: The user UUID in a multi-tenancy environment.
+          type: string
+          example: '558057c4256545bd8a307c37464003c9'
+        Description:
+          description: Plan description.
+          type: string
+          example: AWS to HW OBS Bucket Migration
+        Name:
+          description: The plan name specified by user.
+          type: string
+          example: plan001
+        Type:
+          description: >-
+            The plan type. Till now only migration support. New types will be
+            added in the future.
+          type: string
+          example: migration
+          enum:
+            - migration
+        PolicyEnabled:
+          description: Enable policy or not.
+          type: boolean
+        PolicyId:
+          description: >-
+            Related policy id, plan will be scheduled automatically according this policy if PolicyEnabled is true.
+          type: string
+        RemainSource:
+          description: Remain the source objects or not.
+          type: boolean
+          example: true
+        SourceConn:
+          $ref: '#/components/schemas/Connector'
+        DestConn:
+          $ref: '#/components/schemas/Connector'
+        Filter:
+          type: object
+          properties:
+            Prefix:
+              type: string
+              description: >-
+                Prefix of object name, only those objects which name have this
+                prefix will be choosed.
+              example: photos/
+            Tag:
+              type: array
+              description: Tag of object name.
+              items:
+                $ref: '#/components/schemas/KV'
+    Job:
+      type: object
+      properties:
+        Id:
+          description: The plan ID, generated by server
+          type: string
+          example: '5bd6f273b0bdf90001dc91c3'
+        TenantId:
+          description: The tenant UUID in a multi-tenancy environment.
+          type: string
+          example: '94b280022d0c4401bcf3b0ea85870519'
+        UserId:
+          description: The User UUID in a multi-tenancy environment.
+          type: string
+          example: '558057c4256545bd8a307c37464003c9'
+        TriggerType:
+          description: The migration triggering operation type.
+          type: string
+          example: manual
+          enum:
+            - auto
+            - manual
+        Type:
+          description: >-
+            The plan type. Till now only migration support. New types will be
+            added in the future.
+          type: string
+          example: migration
+          enum: *JOBS
+        PlanName:
+          description: The name of plan job belongs to.
+          type: string
+          example: plan001
+        PlanId:
+          description: The id of plan job belongs to.
+          type: string
+          example: '5eaa81fd6f384d000116d1d4'
+        SourceLocation:
+          description: The source data migrate or replicate from.
+          type: string
+          example: bucket001
+        DestLocation:
+          description: The target data migrate or replicate to.
+          type: string
+          example: bucket002
+        CreateTime:
+          description: The time job is created.
+          type: integer
+          example: 1588233982
+        StartTime:
+          description: The time job started to run.
+          type: integer
+          example: 158823398
+        EndTime:
+          description: The time job ended.
+          type: integer
+          example: 1588233983
+        Status:
+          description: The status of job.
+          type: string
+          enum:
+            - pending
+            - running
+            - succeed
+            - failed
+          example: succeed
+        TotalCapacity:
+          description: The total capacity that should be migrated.
+          type: integer
+          example: 287206
+        PassedCapacity:
+          description: The capacity that have been migrated.
+          type: integer
+          example: 287206
+        MigratedCapacity:
+          description: The capacity that have been migrated till now.
+          type: integer
+          example: 287206
+        TotalCount:
+          description: The total count of objects that should be migrated.
+          type: integer
+          example: 1
+        PassedCount:
+          description: The count that have been migrated.
+          type: integer
+          example: 1
+        Progress:
+          description: The progress of job, represented by percentage.
+          type: integer
+          example: 100
+        RemainSource:
+          description: Flag indicating whether to keep the content of source bucket
+          type: boolean
+          example: true
+    Policy:
+      type: object
+      properties:
+        Id:
+          description: The policy ID, generated by server
+          type: string
+          example: '5bd6f273b0bdf90001dc91c3'
+        TenantId:
+          description: The tenant UUID in a multi-tenancy environment.
+          type: string
+          example: '94b280022d0c4401bcf3b0ea85870519'
+        Name:
+          description: Policy Name.
+          type: string
+          example: policy001
+        Description:
+          description: Description of policy.
+          type: string
+          example: Migration Policy
+        Schedule:
+          description: Schedule rules.
+          type: object
+          properties:
+            Type:
+              type: string
+              description: The type of scheduler, only cron support now.
+              enum:
+                - cron
+              example: 'cron'
+            TriggerProperties:
+              type: string
+              description: >-
+                Cron expression format. A cron expression represents a set of
+                times, using 6 space-separated fields as follow.
+                #Field name   | Mandatory? | Allowed values  | Allowed special characters
+                #----------   | ---------- | --------------  | --------------------------
+                #Seconds      | Yes        | 0-59            | * / , -
+                #Minutes      | Yes        | 0-59            | * / , -
+                #Hours        | Yes        | 0-23            | * / , -
+                #Day of month | Yes        | 1-31            | * / , - ?
+                #Month        | Yes        | 1-12 or JAN-DEC | * / , -
+                #Day of week  | Yes        | 0-6 or SUN-SAT  | * / , - ?
+                #See https://godoc.org/github.com/robfig/cron for details.
+              example: ''
+    FileShare:
+      type: object
+      required:
+        - Name
+        - BackendId
+        - Metadata
+      properties:
+        Id:
+          description: The fileshare ID, - Optional
+          type: string
+          example: '5ef1db51202b510001c3804c'
+        UserId:
+          description: The user UUID in a multi-tenancy environment, - Optional
+          type: string
+          example: '558057c4256545bd8a307c37464003c9'
+        BackendId:
+          description: The backend ID, - Required
+          type: string
+          example: '5ea809d2553b0f000116be32'
+        Backend:
+          description: The backend Name, - Optional
+
+          type: string
+          example: backend001
+        Name:
+          description: The fileshare name specified by user, - Required
+          type: string
+          example: fileshare001
+        Description:
+          description: The fileshare name specified by user, - Optional
+          type: string
+          example: 'AWS FileShare'
+        Type:
+          description: The fileshare type, - Optional
+          type: string
+          example: generalPurpose
+        Size:
+          description: The fileshare size, - Optional
+          type: integer
+          example: 1073741824
+        Region:
+          description: The region for the fileshare, - Optional
+          type: string
+          example: ap-south-1
+        AvailabilityZone:
+          description: The availability zone for the fileshare, - Optional
+          type: string
+          example: ap-south-1a
+        Protocols:
+          description: The fileshare supported protocols, - Optional
+          type: string
+          enum: &FILESHARE_PROTOCOL
+            - NFS
+            - SMB
+          example: *FILESHARE_PROTOCOL
+        Tags:
+          description: The fileshare tags, - Optional
+          type: array
+          items:
+            $ref: '#/components/schemas/Tag'
+        SnapshotId:
+          description: The fileshare snapshot id, - Optional
+          type: string
+          example: '5eea749a926e5300011a69d6'
+        Encrypted:
+          description: Flag for encryted fileshare, - Optional
+          type: boolean
+          example: true
+        EncryptedSettings:
+          description: Encryted fileshare Keys, - Optional
+          type: object
+          additionalProperties:
+            type: string
+          example:
+            KmsKeyId: 'arn:aws:kms:ap-south-1:676589967111:key/a6e1716e-0e90-407b-b494-b8ef8de91fc'
+        Metadata:
+          type: object
+          description: Metadata for cloud backend specific data, - Required
+          additionalProperties:
+            type: string
+          example:
+            PerformanceMode: 'maxIO'
+            ThroughputMode: 'provisioned'
+            ProvisionedThroughputInMibps: 1
+    FileShareUpdate:
+      type: object
+      properties:
+        Description:
+          description: The fileshare name specified by user, - Optional
+          type: string
+          example: 'AWS FileShare'
+        Size:
+          description: The fileshare size, - Optional
+          type: integer
+          example: 1073741824
+        Tags:
+          description: The fileshare tags, - Optional
+          type: array
+          items:
+            $ref: '#/components/schemas/Tag'
+        Encrypted:
+          description: Flag for encryted fileshare, - Optional
+          type: boolean
+          example: true
+        EncryptedSettings:
+          description: Encryted fileshare Keys, - Optional
+          type: object
+          additionalProperties:
+            type: string
+          example:
+            KmsKeyId: 'arn:aws:kms:ap-south-1:676589967111:key/a6e1716e-0e90-407b-b494-b8ef8de91fc'
+        Metadata:
+          type: object
+          description: Metadata for cloud backend specific data, - Required
+          additionalProperties:
+            type: string
+          example:
+            PerformanceMode: 'maxIO'
+            ThroughputMode: 'provisioned'
+            ProvisionedThroughputInMibps: 1
+    Volume:
+      type: object
+      required:
+        - Name
+        - BackendId
+        - Type
+      properties:
+        Id:
+          description: 'The volume ID, - Optional'
+          type: string
+          example: 5ef1db51202b510001c3804c
+        UserId:
+          description: 'The user UUID in a multi-tenancy environment, - Optional'
+          type: string
+          example: 558057c4256545bd8a307c37464003c9
+        BackendId:
+          description: 'The backend ID, - Required'
+          type: string
+          example: 5ea809d2553b0f000116be32
+        Backend:
+          description: 'The backend Name, - Optional'
+          type: string
+          example: backend001
+        Name:
+          description: 'The volume name specified by user, - Required'
+          type: string
+          example: volume001
+        Description:
+          description: 'The volume name specified by user, - Optional'
+          type: string
+          example: AWS Volume
+        Type:
+          description: 'The volume type, - Optional'
+          type: string
+          example: gp2
+        iops:
+          description: The IOPS the required for the volume as per the cloud provider
+          type: integer
+          example: 100
+        Size:
+          description: 'The volume size, - Optional'
+          type: integer
+          example: 1073741824
+        Region:
+          description: 'The region for the volume, - Optional'
+          type: string
+          example: ap-south-1
+        AvailabilityZone:
+          description: 'The availability zone for the volume, - Optional'
+          type: string
+          example: ap-south-1a
+        Tags:
+          description: 'The volume tags, - Optional'
+          type: array
+          items:
+            $ref: '#/components/schemas/Tag'
+        SnapshotId:
+          description: 'The volume snapshot id, - Optional'
+          type: string
+          example: 5eea749a926e5300011a69d6
+        Encrypted:
+          description: 'Flag for encrypted volume, - Optional'
+          type: boolean
+          example: true
+        EncryptedSettings:
+          description: 'Encrypted volume Keys, - Optional'
+          type: object
+          additionalProperties:
+            type: string
+          example:
+            KmsKeyId: 'arn:aws:kms:ap-south-1:676589967111:key/a6e1716e-0e90-407b-b494-b8ef8de91fc'
+        Metadata:
+          type: object
+          description: 'Metadata for cloud backend specific data, - Optional'
+          additionalProperties:
+            type: string
+          example:
+            VolumeId: vol-03deedaee2de0060f
+    VolumeUpdate:
+      type: object
+      properties:
+        Description:
+          description: 'The volume name specified by user, - Optional'
+          type: string
+          example: AWS Volume Update
+        Size:
+          description: 'The volume size, - Optional'
+          type: integer
+          example: 1073741824
+        Type:
+          description: 'The volume Type, - Optional'
+          type: integer
+          example: io1
+        Iops:
+          description: 'The Iops, - Optional'
+          type: integer
+          example: 200
+        Tags:
+          description: 'The volume tags, - Optional'
+          type: array
+          items:
+            $ref: '#/components/schemas/Tag'
+        Metadata:
+          type: object
+          description: 'Metadata for cloud backend specific data, - Optional'
+          additionalProperties:
+            type: string
+          example:
+            VolumeId: vol-03deedaee2de0060f
+    Tier:
+      type: object
+      required:
+        - Name
+      properties:
+        Id:
+          description: 'The SSP ID'
+          type: string
+          example: 60d2e32e7df895000142695d
+        TenantId:
+          description: 'The Tenant ID'
+          type: string
+          example: a881ede44b9449e2ba795e4deb2bf807
+        Name:
+          description: 'The SSP name specified by user, - Required'
+          type: string
+          example: Gold
+        Backends:
+          description: 'The backend Name, - Optional'
+          type: array
+          items:
+            example: backend001, backend002
+        Tenants:
+          description: 'The Tenants Name, - Optional'
+          type: array
+          items:
+            example: Tenants1, Tenants2
+    TierRequest:
+      type: object
+      required:
+        - Name
+      properties:
+        Id:
+          description: 'The SSP ID'
+          type: string
+          example: a881ede44b9449e2ba795e4deb2bf808
+        Name:
+          description: 'The SSP name specified by user, - Required'
+          type: string
+          example: Gold
+        Backends:
+          description: 'The backend Name, - Optional'
+          type: array
+          items:
+            example: backend001, backend002
+        Tenants:
+          description: 'The Tenants Name, - Optional'
+          type: array
+          items:
+            example: Tenants1, Tenants2
+    TierUpdate:
+      type: object
+      properties:
+        AddBackends:
+          description: 'The backend Name, - Optional'
+          type: array
+          items:
+            example: backend001, backend002
+        DeleteBackends:
+          description: 'The backend Name, - Optional'
+          type: array
+          items:
+            example: backend001, backend002
+        AddTenants:
+          description: 'The Tenants Name, - Optional'
+          type: array
+          items:
+            example: Tenants1, Tenants2
+        DeleteTenants:
+          description: 'The Tenants Name, - Optional'
+          type: array
+          items:
+            example: Tenants1, Tenants2
+
+    AKSKResponse:
+      type: object
+      properties:
+        access_key:
+          description: 'Valid TenantId or ProjectId'
+          type: string
+          example: 1Pq7NVTqFh4uR7vy
+        secret_key:
+          description: 'Valid User ID'
+          type: string
+          example: x3Wbktxj4aSudXwAQJG6ExBmqgEMjVlq
+    AKSKGetResponse:
+      type: array
+      items:
+        properties:
+          project_id:
+            description: 'Valid TenantId or ProjectId'
+            type: string
+            example: 94b280022d0c4401bcf3b0ea85870519
+          user_id:
+            description: 'Valid User ID'
+            type: string
+            example: 558057c4256545bd8a307c37464003c9
+          type:
+            description: 'Valid User ID'
+            type: string
+            example: ec2
+          blob:
+            type: array
+            item:
+            $ref: '#/components/schemas/AKSKResponse'
+    BaseResponse:
+      type: object
+      properties:
+        ReturnCode:
+          description: error code
+          type: integer
+          example: 200
+        Message:
+          description: sucessfully or failure
+          type: string
+          example: 1
+    CreateBucketConfiguration:
+      type: object
+      xml:
+        namespace: http://s3.amazonaws.com/doc/2006-03-01/
+      properties:
+        LocationConstraint:
+          description: The backend of Bucket
+          type: string
+          example: backend001
+    ListAllMyBucketsResult:
+      type: object
+      xml:
+        namespace: http://s3.amazonaws.com/doc/2006-03-01/
+      properties:
+        Owner:
+          description: Owner/Tenant of the bucket
+          type: object
+          properties:
+            ID:
+              description: The tenant UUID in a multi-tenancy environment.
+              type: string
+              example: '94b280022d0c4401bcf3b0ea85870519'
+            DisplayName:
+              description: The tenant name in a multi-tenancy environment.
+              type: string
+              example: ''
+        Buckets:
+          description: ''
+          type: object
+          properties:
+            Bucket:
+              description: Bucket details
+              type: object
+              properties:
+                Name:
+                  description: The name of bucket
+                  type: string
+                  example: bucket001
+                CreationDate:
+                  description: The date of creation
+                  type: string
+                  example: '2020-04-29T15:37:28.000Z'
+                LocationConstraint:
+                  description: The backend of logical bucket
+                  type: string
+                  example: aws-backend
+                VersioningConfiguration:
+                  description: Versioning Configuration of the bucket
+                  type: object
+                  properties:
+                    Status:
+                      description: Status of the Versioning Bucket
+                      type: string
+                      enum:
+                        - Enabled
+                        - Disabled
+                        - Suspended
+                      example: Disabled
+                SSEConfiguration:
+                  description: SSE Configuration of the bucket
+                  type: object
+                  properties:
+                    SSE:
+                      description: SSE Configuration of the bucket
+                      type: object
+                      properties:
+                        enabled:
+                          description: Status of the SSE Bucket
+                          type: boolean
+                          example: false
+                    SSE-KMS:
+                      description: SSE KMS Configuration of the bucket
+                      type: object
+                      properties:
+                        enabled:
+                          description: Status of the SSE KMS Bucket
+                          type: boolean
+                          example: false
+                        DefaultKMSMasterKey:
+                          description: Master Key of the SSE KMS Bucket
+                          type: string
+                          example: ''
+    ListBucketResult:
+      type: object
+      description: Bucket List Metadata
+      properties:
+        Delimiter:
+          description: Delimiter is a character used to group keys
+          type: string
+          example: ''
+        IsTruncated:
+          description: Flag to indicate whether all of the results that satisfied the search criteria is returned
+          type: boolean
+          example: false
+        Marker:
+          description: Indicates where in the bucket listing begins.
+          type: string
+          example: ''
+        NextMarker:
+          description: When response is truncated, key name is used in this field as marker in the subsequent request to get next set of objects.
+          type: string
+          example: ''
+        MaxKeys:
+          description: Maximum number of keys returned in the response body.
+          type: integer
+          example: 1000
+        Name:
+          description: Bucket Name
+          type: string
+          example: bucket001
+        Prefix:
+          description: Keys that begin with the indicated prefix
+          type: string
+          example: ''
+        Contents:
+          description: Metadata about each object returned
+          type: object
+          properties:
+            Key:
+              description: The name of the Object
+              type: string
+              example: SODA.PNG
+            LastModified:
+              description: The date the Object was Last Modified
+              type: string
+              example: '2020-04-29T14:11:47.000Z'
+            ETag:
+              description: The entity tag is an MD5 hash of the object. ETag reflects only changes to the contents of an object, not its metadata.
+              type: string
+              example: '&#34;d97849a5d11d7f7f90e0c1609d091d0a&#34;'
+            Size:
+              description: Size in bytes of the object
+              type: integer
+              example: 287206
+            Owner:
+              description: The owner of the object
+              type: object
+              properties:
+                ID:
+                  description: The ID of the owner.
+                  type: string
+                  example: '94b280022d0c4401bcf3b0ea85870519'
+                DisplayName:
+                  description: The display name of the owner.
+                  type: string
+                  example: '94b280022d0c4401bcf3b0ea85870519'
+            StorageClass:
+              description: The class of storage used to store the object
+              type: string
+              example: STANDARD
+            Tier:
+              description: The storageclass tier for which the object belongs to
+              type: integer
+              example: 1
+            Location:
+              description: The backend of object
+              type: string
+              example: backend001
+    ListStorageClasses:
+      type: array
+      xml:
+        wrapped: true
+      items:
+        xml:
+          name: Class
+        type: object
+        properties:
+          Name:
+            description: The storage class name, as default, it is compatible with aws s3.
+            type: string
+            enum: &STORAGE_CLASSES
+              - STANDARD
+              - STANDARD_IA
+              - GLACIER
+            example: STANDARD
+          Tier:
+            description: The storage tier, used in crystal. Each tier is mapped to a specific name.
+            type: integer
+            enum: &STORAGE_TIERS
+              - 1
+              - 99
+              - 999
+            example: 1
+    FileShareResult:
+      type: object
+      description: FileShare Response
+      properties:
+        Id:
+          description: The fileshare ID, generated by server
+          type: string
+          example: '5ef1db51202b510001c3804c'
+        CreatedAt:
+          description: The time of creation of the fileshare.
+          type: string
+          example: '2020-06-23T16:07:05'
+        UpdatedAt:
+          description: The time at which the fileshare was updated.
+          type: string
+          example: '2020-06-23T16:07:05'
+        TenantId:
+          description: The tenant UUID in a multi-tenancy environment.
+          type: string
+          example: '94b280022d0c4401bcf3b0ea85870519'
+        UserId:
+          description: The user UUID in a multi-tenancy environment.
+          type: string
+          example: '5ea809d2553b0f000116be32'
+        BackendId:
+          description: The backend ID
+          type: string
+          example: '5ea809d2553b0f000116be32'
+        Backend:
+          description: The backend Name.
+          type: string
+          example: backend001
+        Name:
+          description: The fileshare name specified by user.
+          type: string
+          example: fileshare001
+        Description:
+          description: The fileshare description specified by user.
+          type: string
+          example: 'AWS FileShare'
+        Type:
+          description: The fileshare type.
+          type: string
+          example: generalPurpose
+        Size:
+          description: The fileshare size.
+          type: integer
+          example: 1073741824
+        Region:
+          description: The region for the fileshare.
+          type: string
+          example: ap-south-1
+        AvailabilityZone:
+          description: The availability zone for the fileshare.
+          type: string
+          example: ap-south-1a
+        Status:
+          description: The fileshare status.
+          type: string
+          enum: &FS_STATUS
+            - available
+            - creating
+            - inUse
+            - error
+            - updating
+            - deleting
+            - errorDeleting
+            - deleted
+          example: available
+        Protocols:
+          description: The fileshare supported protocols.
+          type: string
+          enum:
+            - NFS
+            - SMB
+          example: *FILESHARE_PROTOCOL
+        Tags:
+          type: array
+          items:
+            $ref: '#/components/schemas/Tag'
+        SnapshotId:
+          description: The fileshare snapshot id.
+          type: string
+          example: '5eea749a926e5300011a69d6'
+        Encrypted:
+          description: Flag for encryted fileshare.
+          type: boolean
+          example: true
+        EncryptedSettings:
+          description: Encryted fileshare Keys.
+          type: object
+          additionalProperties:
+            type: string
+          example:
+            KmsKeyId: 'arn:aws:kms:ap-south-1:676589967111:key/a6e1716e-0e90-407b-b494-b8ef8de91fc'
+        Metadata:
+          type: object
+          properties:
+            fields:
+              type: object
+              $ref: '#/components/schemas/Fields'
+    VolumeResult:
+      type: object
+      description: Volume Response
+      properties:
+        Id:
+          description: 'The volume ID, generated by server'
+          type: string
+          example: 5ef1db51202b510001c3804c
+        CreatedAt:
+          description: The time of creation of the volume.
+          type: string
+          example: '2020-06-23T16:07:05'
+        UpdatedAt:
+          description: The time at which the volume was updated.
+          type: string
+          example: '2020-06-23T16:07:05'
+        TenantId:
+          description: The tenant UUID in a multi-tenancy environment.
+          type: string
+          example: 94b280022d0c4401bcf3b0ea85870519
+        UserId:
+          description: The user UUID in a multi-tenancy environment.
+          type: string
+          example: 5ea809d2553b0f000116be32
+        BackendId:
+          description: The backend ID
+          type: string
+          example: 5ea809d2553b0f000116be32
+        Backend:
+          description: The backend Name.
+          type: string
+          example: backend001
+        Name:
+          description: The volume name specified by user.
+          type: string
+          example: volume001
+        Description:
+          description: The volume description specified by user.
+          type: string
+          example: AWS Volume
+        Type:
+          description: The volume type.
+          type: string
+          example: gp2
+        Size:
+          description: The volume size.
+          type: integer
+          example: 1073741824
+        Region:
+          description: The region for the volume.
+          type: string
+          example: ap-south-1
+        AvailabilityZone:
+          description: The availability zone for the volume.
+          type: string
+          example: ap-south-1a
+        Status:
+          description: The volume status.
+          type: string
+          enum:
+            - available
+            - creating
+            - inUse
+            - error
+            - updating
+            - deleting
+            - errorDeleting
+            - deleted
+          example: available
+        Tags:
+          type: array
+          items:
+            $ref: '#/components/schemas/Tag'
+        SnapshotId:
+          description: The volume snapshot id.
+          type: string
+          example: 5eea749a926e5300011a69d6
+        Encrypted:
+          description: Flag for encryted volume.
+          type: boolean
+          example: true
+        EncryptedSettings:
+          description: Encryted volume Keys.
+          type: object
+          additionalProperties:
+            type: string
+          example:
+            KmsKeyId: 'arn:aws:kms:ap-south-1:676589967111:key/a6e1716e-0e90-407b-b494-b8ef8de91fc'
+        Metadata:
+          type: object
+          properties:
+            fields:
+              type: object
+              $ref: '#/components/schemas/VolumeFields'
+    RestoreObject:
+      type: object
+      description: Restore object request
+      properties:
+        tier:
+          type: string
+          description: the retrieval option when restoring an archived object. This is cloud vendor specific.
+          example: Expedited
+        days:
+          type: integer
+          description: The Days element is required for regular restore. Required for restoring archived object.
+          example: 1
+  requestBodies:
+    AKSK:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/AKSK'
+      description: AKSK Creation payload.
+      required: true
+    Backend:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Backend_Request'
+      description: Cloud Backend configurations
+      required: true
+    Plan:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Plan'
+      description: Plan configurations
+      required: true
+    Policy:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Policy'
+      description: Policy configurations
+      required: true
+    FileShare:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/FileShare'
+      description: Cloud FileShare configurations
+      required: true
+    FileShareUpdate:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/FileShareUpdate'
+      description: Cloud FileShare Update configurations
+      required: true
+    Volume:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Volume'
+      description: Cloud volume configurations
+      required: true
+    VolumeUpdate:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/VolumeUpdate'
+      description: Cloud Volume Update configurations
+      required: true
+    Tier:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/TierRequest'
+      description: Storage Service Plan configurations
+      required: true
+    TierUpdate:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/TierUpdate'
+      description: Storage Service Plan Update configurations
+      required: true
