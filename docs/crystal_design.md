@@ -78,3 +78,110 @@ Fig.1: High level architecture diagram
 **Get metadata**:
 
 ![](resources/crystal-Get-sequence.png)
+
+
+## API SPEC:
+
+### [POST /v1/{tenantId}/backends/sync]()
+
+Collect the metadata for all backends
+
+**Request Body:**
+
+None
+
+**Response Body:**
+
+	{
+    errorCode: int
+	msg: string // “sync request sent successfully!”
+  }
+
+
+### [POST /v1/{tenantId}/backends/{backendId}/sync]()
+Collect the metadata for particular backend
+
+
+**Request Parameters:**
+
+     *backendId: string
+
+**Request Body:**
+
+None
+
+**Response Body:**
+
+	{
+      errorCode: int
+      msg: string // “sync request sent successfully!”
+    }
+
+
+### [GET /v1/{tenantId}/metadatas]()
+
+List all the metadata for all backends
+
+**Request Parameters:**
+
+limit  int
+
+Offset int
+
+Type string
+
+backendName string
+
+Region string
+
+bucketName string
+
+objectName string
+
+sizeOfObject int
+
+sizeOfBucket int
+
+bucketSizeOperator string
+
+**Request Body:**
+
+  NA
+
+**Response Body:**
+
+    {
+    "buckets": [
+
+      {
+        "id": "084bf71e-a102-11e7-88a8-e31fe6d52248",
+        "creationDate: "2022-11-10T14:36:58.014Z",
+        "name": "string",  // bucket-01
+        "region": "string",  // ap-south-1
+        "type": "string"  // aws
+        "access": "string"  // Objects can be public
+        "numberOfObjects": integer // 50
+        "totalSize(in bytes)": integer  // 100
+        "tags": {key1: value1}
+        "objects": [
+            {
+  	      "id": "084bf71e-a102-11e7-88a8-e31fe6d52248",
+  	      "lastModifiedDate: "2022-11-10T14:36:58.014Z",
+  	      "name": string,
+  	      "bucketName": string
+  	      "size": bytes
+  	      "type": string
+  	      "serverSideEncryptionEnabled": bool
+  	      "versionId": integer
+  	      "storageClass": string
+  	      "redirectLocation": string
+  	      "replicationStatus": string
+  	      "expiresDate": string
+  	      "grantControl": string
+  	      "tags": {string:string}
+  	      "metadata": {string:string
+           },
+         ]
+      },
+      ]
+    }
