@@ -50,10 +50,10 @@ API gateway integration will be handled in future
 
 Below is description of each component:
 
-**API Handler**:
+**a) API Handler**:
 This module expose REST API’s to client
 
-**Metadata Manager**:
+**b) Metadata Manager**:
 
 This is independent microservice, which has three tasks:
 
@@ -63,11 +63,11 @@ This is independent microservice, which has three tasks:
 
   3)  Query: prepare query structure and get the metadata from db
 
-**Storage adapter**:
+**c) Storage adapter**:
 
 It contains all drivers of respective cloud providers.
 
-**Backend manager**
+**d) Backend manager**
 
 Fig.1: High level architecture diagram
 
@@ -93,9 +93,9 @@ None
 **Response Body:**
 
 	{
-    errorCode: int
-	msg: string // “sync request sent successfully!”
-  }
+        errorCode: int
+	       msg: string // “sync request sent successfully!”
+    }
 
 
 ### [POST /v1/{tenantId}/backends/{backendId}/sync]()
