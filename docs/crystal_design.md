@@ -4,12 +4,12 @@
 
 ## Motivation and background
 
-Metadata gives basic information about data—including type, time of creation, size of object/buckets, storage class, and more for cloud object storages. Metadata management is the business discipline of managing the metadata about data. It can play key roles during decision making activity. Thus metadata management is required nowadays.
+Metadata gives basic information about data—including type, time of creation, size of object/buckets, storage class, user-defined fields, and more for cloud object storages. Metadata management is the business discipline of managing the metadata about data. It can play key roles during decision making activity. Thus metadata management is required nowadays.
 
-A user may provision s3-cloud buckets using some solution like strato(multi-cloud project from SODAFOUNDATION) and/or manually. To get and manage metadata of all buckets/objects provisioned by manually and automatically, another solution required. Because, there would be no metadata available for manually provisioned buckets.
+A user may provision s3 supported buckets using some solution like strato(multi-cloud project from SODAFOUNDATION) and/or manually. To get and manage metadata of all buckets/objects provisioned by manually and automatically, another solution required. Because, there would be no metadata available for manually provisioned buckets.
 
 ### Goals
-Develop a Metadata Management Service which can discover, harvest, and manage all Externally orchestrated S3 buckets and its corresponding metadata from one place. It should perform following operations:
+Develop a Metadata Management Service which can discover, harvest, and manage all Externally orchestrated S3 supported buckets and its corresponding metadata from one place. It should perform following operations:
 Access the Metadata
 Acquire the Metadata
 Store the Metadata
@@ -29,7 +29,7 @@ API gateway integration will be handled in future
   * Auto sync(event-driven)
 
 
-* **Metadata Store**: A single metadata store for all S3 buckets and objects metadata
+* **Metadata Store**: A single metadata store for all S3 supported buckets and objects metadata
 
 * **Filter and Search**: Search metadata across the entire data catalog. Filter metadata based on various parameters like, tags, type, size, region, etc.
 * **Classification**: Classification of metadata based on some user configuration.
@@ -66,6 +66,10 @@ This is independent microservice, which has three tasks:
 **c) Storage adapter**:
 
 It contains all drivers of respective cloud providers.
+
+**d) Writer service**:
+
+It is responsible for writing data which is coming from kafka topic 
 
 **d) Backend manager**
 
