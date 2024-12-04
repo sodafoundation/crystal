@@ -52,7 +52,7 @@ const (
 	PROJECTS_URI           = "/v3/projects"
 	PROJECTS_QUERY_CONDN   = "?domain_id=default"
 )
-
+// This is my test
 // Map of object storage providers supported by s3 services. Keeping a map
 // to optimize search
 var objectStorage = map[string]int{
