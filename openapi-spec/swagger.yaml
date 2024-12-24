@@ -525,7 +525,6 @@ paths:
                         - $ref: '#/components/schemas/FS_Type'
                         - $ref: '#/components/schemas/IBM_Type'
                         - $ref: '#/components/schemas/YIG_Type'
-                        - $ref: '#/components/schemas/Alibaba_Type'
                         - $ref: '#/components/schemas/AWS_File_Type'
                         - $ref: '#/components/schemas/Azure_File_Type'
                         - $ref: '#/components/schemas/GCP_File_Type'
@@ -1815,17 +1814,6 @@ components:
           description: The backend type description.
           type: string
           example: YIG Storage
-    Alibaba_Type:
-      type: object
-      properties:
-        name:
-          description: The backend type.
-          type: string
-          example: alibaba-oss
-        description:
-          description: The backend type description.
-          type: string
-          example: Alibaba Object Storage Service(OSS)
     AWS_File_Type:
       type: object
       properties:

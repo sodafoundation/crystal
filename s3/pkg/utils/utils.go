@@ -62,12 +62,6 @@ const (
 	GCS_ARCHIVE        = "Archive"
 )
 
-const (
-	ALIBABA_STANDARD = "Standard"
-	ALIBABA_IA       = "IA"
-	ALIBABA_ARCHIVE  = "Archive"
-)
-
 //Object Storage Type
 const (
 	OSTYPE_OPENSDS       = "OpenSDS"
@@ -77,7 +71,6 @@ const (
 	OSTYPE_GCS           = "gcp-s3"
 	OSTYPE_CEPH          = "ceph-s3"
 	OSTYPE_FUSIONSTORAGE = "fusionstorage-object"
-	OSTYPE_ALIBABA       = "alibaba-oss"
 )
 
 const (

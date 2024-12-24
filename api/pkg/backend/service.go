@@ -64,7 +64,6 @@ var objectStorage = map[string]int{
 	"gcp-s3":               1,
 	"fusionstorage-object": 1,
 	"yig":                  1,
-	"alibaba-oss":          1,
 	"sony-oda":             1,
 }
 
