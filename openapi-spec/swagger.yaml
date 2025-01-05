@@ -366,10 +366,8 @@ paths:
           schema:
             type: string
             enum: &CLOUD_BACKENDS
-              - hw-obs
               - aws-s3
               - azure-blob
-              - ceph-s3
               - gcp-s3
               - fusionstorage-object
               - ibm-cos
@@ -1737,17 +1735,6 @@ components:
           description: The backend type description.
           type: string
           example: AWS Simple Cloud Storage Service(S3)
-    Huawei_Type:
-      type: object
-      properties:
-        name:
-          description: The backend type.
-          type: string
-          example: hw-obs
-        description:
-          description: The backend type description.
-          type: string
-          example: Huawei Storage Object Service(OBS)
     Azure_Type:
       type: object
       properties:
@@ -1759,17 +1746,6 @@ components:
           description: The backend type description.
           type: string
           example: Azure Blob Storage
-    Ceph_Type:
-      type: object
-      properties:
-        name:
-          description: The backend type.
-          type: string
-          example: ceph-s3
-        description:
-          description: The backend type description.
-          type: string
-          example: Ceph Object Storage
     GCP_Type:
       type: object
       properties:
@@ -1858,39 +1834,6 @@ components:
           description: The backend type description.
           type: string
           example: AWS Block Service
-    Hw_File_Type:
-      type: object
-      properties:
-        name:
-          description: The backend type.
-          type: string
-          example: hw-file
-        description:
-          description: The backend type description.
-          type: string
-          example: Huawei File Service
-    Hw_Block_Type:
-      type: object
-      properties:
-        name:
-          description: The backend type.
-          type: string
-          example: hw-block
-        description:
-          description: The backend type description.
-          type: string
-          example: Hw Block Service
-    Sony_Oda_Type:
-      type: object
-      properties:
-        name:
-          description: The backend type.
-          type: string
-          example: sony-oda
-        description:
-          description: The backend type description.
-          type: string
-          example: Sony-ODA Object Storage
     KV:
       type: object
       properties:

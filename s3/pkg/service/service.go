@@ -169,20 +169,6 @@ func loadAzureDefault(i2e *map[string]*Int2String, e2i *map[string]*String2Int) 
 	(*e2i)[OSTYPE_Azure] = &n2t
 }
 
-func loadHWDefault(i2e *map[string]*Int2String, e2i *map[string]*String2Int) {
-	t2n := make(Int2String)
-	t2n[Tier1] = string(obs.StorageClassStandard)
-	t2n[Tier99] = string(obs.StorageClassWarm)
-	t2n[Tier999] = string(obs.StorageClassCold)
-	(*i2e)[OSTYPE_OBS] = &t2n
-
-	n2t := make(String2Int)
-	n2t[string(obs.StorageClassStandard)] = Tier1
-	n2t[string(obs.StorageClassWarm)] = Tier99
-	n2t[string(obs.StorageClassCold)] = Tier999
-	(*e2i)[OSTYPE_OBS] = &n2t
-}
-
 func loadGCPDefault(i2e *map[string]*Int2String, e2i *map[string]*String2Int) {
 	t2n := make(Int2String)
 	t2n[Tier1] = GCS_STANDARD
@@ -195,16 +181,6 @@ func loadGCPDefault(i2e *map[string]*Int2String, e2i *map[string]*String2Int) {
 	//n2t[GCS_NEARLINE] = Tier99
 	n2t[GCS_ARCHIVE] = Tier999
 	(*e2i)[OSTYPE_GCS] = &n2t
-}
-
-func loadCephDefault(i2e *map[string]*Int2String, e2i *map[string]*String2Int) {
-	t2n := make(Int2String)
-	t2n[Tier1] = CEPH_STANDARD
-	(*i2e)[OSTYPE_CEPH] = &t2n
-
-	n2t := make(String2Int)
-	n2t[CEPH_STANDARD] = Tier1
-	(*e2i)[OSTYPE_CEPH] = &n2t
 }
 
 func loadFusionStroageDefault(i2e *map[string]*Int2String, e2i *map[string]*String2Int) {
@@ -222,9 +198,7 @@ func loadDefaultStorageClass() error {
 							T1		        T99					T999
 	  AWS S3:				STANDARD		STANDARD_IA			GLACIER
 	  Azure Blob:			HOT				COOL				ARCHIVE
-	  HW OBS:				STANDARD		WARM				COLD
 	  GCP:					Multi-Regional	NearLine			ColdLine
-	  Ceph S3:				STANDARD		-					-
 	  FusinoStorage Object: STANDARD		-					-
 	*/
 	/* Lifecycle transition:
@@ -247,9 +221,7 @@ func loadDefaultStorageClass() error {
 	loadAWSDefault(&Int2ExtTierMap, &Ext2IntTierMap)
 	loadOpenSDSDefault(&Int2ExtTierMap, &Ext2IntTierMap)
 	loadAzureDefault(&Int2ExtTierMap, &Ext2IntTierMap)
-	loadHWDefault(&Int2ExtTierMap, &Ext2IntTierMap)
 	loadGCPDefault(&Int2ExtTierMap, &Ext2IntTierMap)
-	loadCephDefault(&Int2ExtTierMap, &Ext2IntTierMap)
 	loadFusionStroageDefault(&Int2ExtTierMap, &Ext2IntTierMap)
 
 	log.Infof("Int2ExtTierMap:%v\n", Int2ExtTierMap)

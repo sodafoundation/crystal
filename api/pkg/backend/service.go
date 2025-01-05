@@ -59,12 +59,9 @@ var objectStorage = map[string]int{
 	"aws-s3":               1,
 	"azure-blob":           1,
 	"ibm-cos":              1,
-	"hw-obs":               1,
-	"ceph-s3":              1,
 	"gcp-s3":               1,
 	"fusionstorage-object": 1,
 	"yig":                  1,
-	"sony-oda":             1,
 }
 
 type APIService struct {

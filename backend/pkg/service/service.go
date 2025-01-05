@@ -181,24 +181,12 @@ func (b *backendService) ListType(ctx context.Context, in *pb.ListTypeRequest, o
 			Description: "AWS Simple Cloud Storage Service(S3)",
 		},
 		{
-			Name:        constants.BackendTypeObs,
-			Description: "Huawei Object Storage Service(OBS)",
-		},
-		{
 			Name:        constants.BackendTypeAzure,
 			Description: "Azure Blob Storage",
 		},
 		{
-			Name:        constants.BackendTypeCeph,
-			Description: "Ceph Object Storage",
-		},
-		{
 			Name:        constants.BackendTypeGcs,
 			Description: "GCP Storage",
-		},
-		{
-			Name:        constants.BackendFusionStorage,
-			Description: "Huawei Fusionstorage Object Storage",
 		},
 		{
 			Name:        constants.BackendTypeIBMCos,
@@ -223,18 +211,6 @@ func (b *backendService) ListType(ctx context.Context, in *pb.ListTypeRequest, o
 		{
 			Name:        constants.BackendTypeAwsBlock,
 			Description: "AWS Block Service",
-		},
-		{
-			Name:        constants.BackendTypeHwSFS,
-			Description: "Huawei File Service",
-		},
-		{
-			Name:        constants.BackendTypeHpcBlock,
-			Description: "HPC Block Service",
-		},
-		{
-			Name:        constants.BackendTypeSonyODA,
-			Description: "Sony-ODA Object Storage",
 		},
 	}
 
