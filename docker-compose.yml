@@ -134,7 +134,6 @@ services:
       - /var/log/crystal:/var/log/crystal
       - ./s3/pkg/conf:/etc/crystal
       - ./s3/pkg/datastore/yig/conf/:/etc/yig
-      - /etc/ceph:/etc/ceph
       - ./examples/crystal.conf:/etc/crystal/crystal.conf
       - ./s3/pkg/conf/tidb.sql:/etc/config/tidb/tidb.sql
       - ./s3/pkg/datastore/yig/conf/yig.sql:/etc/config/yig/yig.sql
