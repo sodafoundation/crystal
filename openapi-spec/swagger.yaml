@@ -1,4 +1,4 @@
-# Copyright 2020 The SODA Authors.
+# Copyright 2025 The SODA Authors.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -31,7 +31,7 @@ info:
     SODA crystal API to manage crystal backend storages.
     You can find out more about Swagger at
     [https://sodafoundation.io/](https://sodafoundation.io/)
-  version: 1.0.0
+  version: 1.0.1
   title: SODA crystal API
   termsOfService: '://www.linuxfoundation.org/terms'
   contact:
@@ -516,9 +516,7 @@ paths:
                     items:
                       oneOf:
                         - $ref: '#/components/schemas/AWS_Type'
-                        - $ref: '#/components/schemas/Huawei_Type'
                         - $ref: '#/components/schemas/Azure_Type'
-                        - $ref: '#/components/schemas/Ceph_Type'
                         - $ref: '#/components/schemas/GCP_Type'
                         - $ref: '#/components/schemas/FS_Type'
                         - $ref: '#/components/schemas/IBM_Type'
@@ -527,11 +525,6 @@ paths:
                         - $ref: '#/components/schemas/Azure_File_Type'
                         - $ref: '#/components/schemas/GCP_File_Type'
                         - $ref: '#/components/schemas/AWS_Block_Type'
-                        - $ref: '#/components/schemas/Hw_Block_Type'
-                        - $ref: '#/components/schemas/Hw_File_Type'
-                        - $ref: '#/components/schemas/Sony_Oda_Type'
-
-
                   next:
                     type: integer
                     example: 16
@@ -1020,6 +1013,19 @@ paths:
         required: false
         schema:
           type: string
+      - name: X-AMZ-Storage-Class
+        in: header
+        description: For archiving object, the request header to describe storage class
+        required: false
+        schema:
+          type: string
+      - name: restore
+        in: query
+        description: >-
+          the format is '/{object}?restore', used to restore archived object
+        required: false
+        schema:
+          type: string
 
     put:
       tags:
@@ -1061,78 +1067,6 @@ paths:
           description: Forbidden; Access Denied, InvalidAccessKey, SignatureDoesNotMatch
         '404':
           description: Not Found i.e. No Such Key
-
-  '/{bucketName}/{Object}':
-    parameters:
-      - name: bucketName
-        in: path
-        description: the name of bucket
-        required: true
-        schema:
-          type: string
-      - name: object
-        in: path
-        description: the name of object to be archived
-        required: true
-        schema:
-          type: string
-      - name: Range
-        in: query
-        description: >-
-          the Header parameter Range value like "bytes:1-10",used for multipart archival
-          download
-        required: false
-        schema:
-          type: string
-      - name: uploads
-        in: query
-        description: The format is '/{object}?uploads',used for init multipartarchive
-        required: false
-        schema:
-          type: string
-      - name: partNumber
-        in: query
-        description: >-
-          the format is
-          '/{object}?partNumber={partNumber}&uploadId={UploadId}',must be used
-          with uploadId parameter, used for upload and archive a part
-        required: false
-        schema:
-          type: string
-      - name: uploadId
-        in: query
-        description: >-
-          the format is '/{object}?uploadId={UploadId}',used for compelete
-          multipart archival and abort multipartarchive
-        required: false
-        schema:
-          type: string
-      - name: X-AMZ-Storage-Class
-        in: header
-        description: For archiving object, the request header to describe storage class
-        required: false
-        schema:
-          type: string
-      - name: restore
-        in: query
-        description: >-
-          the format is '/{object}?restore', used to restore archived object
-        required: false
-        schema:
-          type: string
-
-    put:
-      tags:
-        - Backup
-      summary: Upload Object into archival storage.
-      operationId: backupPut
-      responses:
-        '200':
-          description: Successful Archive Object
-        '403':
-          description: Forbidden; Access Denied, InvalidAccessKey, SignatureDoesNotMatch
-        '404':
-          description: Not Found i.e. No Such Bucket
     post:
       tags:
         - Backup
@@ -1154,18 +1088,6 @@ paths:
           description: Not Found i.e. No Such Bucket
         '409':
           description: Restoration of object is already in porgress
-    get:
-      tags:
-        - Backup
-      summary: Download archived and restored Object
-      operationId: backupGet
-      responses:
-        '200':
-          description: Successful Download of Object
-        '403':
-          description: Forbidden; Access Denied, InvalidAccessKey, SignatureDoesNotMatch
-        '404':
-          description: Not Found i.e. No Such Key
 
   '/storageClasses':
     get:
