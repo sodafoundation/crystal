@@ -1,6 +1,6 @@
 module github.com/opensds/crystal
 
-go 1.22.0
+go 1.24.11
 
 require (
 	github.com/Azure/azure-pipeline-go v0.2.3
