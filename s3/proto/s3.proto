@@ -5,7 +5,7 @@ option go_package = "s3/proto";
 service S3 {
     rpc ListBuckets (ListBucketsRequest) returns (ListBucketsResponse) {
     }
-    rpc CreateBucket (Bucket) returns (BaseResponse) {
+    rpc CreateBucket (Bucket) returns (Bucket) {
     }
     rpc DeleteBucket (Bucket) returns (BaseResponse) {
     }
